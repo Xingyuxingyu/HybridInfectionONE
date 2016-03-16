@@ -1,0 +1,156 @@
+為了friendList新增更改的 class in OneSimulator
+20160302
+ActiveRouter
+protected Connection tryMessagesToConnections(List<Message> messages,
+			List<Connection> connections,List<Friend> friends) {
+		for (int i=0, n=connections.size(); i<n; i++) {
+			Connection con = connections.get(i);
+			Message started = tryAllMessages(con, messages); 
+			if (started != null) { 
+				return con;
+			}
+		}
+		/*testForFriend*/
+		/*for (int j=0, m=friends.size(); j<m; j++) {
+			Friend friend = friends.get(j);
+			DTNHost fromNode = friend.getFromHost();
+			DTNHost toNode = friend.getToHost();
+			NetworkInterface fromInter= friend.getFromInterface();
+			NetworkInterface toInter= friend.getToInterface();
+			
+			Connection friendcon = new CBRConnection(fromNode, fromInter, toNode, toInter,1);
+			
+			Message startedFriend = tryAllMessages(friendcon, messages); 
+			if (startedFriend != null) { 
+				return friendcon;
+			}
+		
+		}*/
+		
+		return null;
+	}
+	
+	
+World
+	/*friendlist*/
+	public File friendFile;
+	private FriendsReader reader; 
+    /*friendlist*/
+	
+	public World(List<DTNHost> hosts, int sizeX, int sizeY, 
+			double updateInterval, List<UpdateListener> updateListeners,
+			boolean simulateConnections, List<EventQueue> eventQueues) {
+		this.hosts = hosts;
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;
+		this.updateInterval = updateInterval;
+		this.updateListeners = updateListeners;
+		this.simulateConnections = simulateConnections;
+		this.eventQueues = eventQueues;
+		
+		this.simClock = SimClock.getInstance();
+		this.scheduledUpdates = new ScheduledUpdatesQueue();
+		this.isCancelled = false;		
+
+		setNextEventQueue();
+		/*friendlist*/
+		readFriendList();
+		/*friendlist*/
+		initSettings();
+	}
+	
+	public void readFriendList(){		
+        //System.out.println(hosts.size());
+        for(DTNHost host : hosts){
+        	
+        	this.friendFile = new File("friends-1.txt");
+            this.reader = new FriendsReader(friendFile);
+        	host.getInterfaces().get(0).friends = reader.readFriends(host.getAddress());
+        	for(Friend friend : host.getInterfaces().get(0).friends){
+        		
+        		DTNHost toHost = getNodeByAddress(friend.toFriendAddress);
+        		friend.setFriendHost(host, toHost);
+        		friend.setFriendInterface(host.getInterfaces().get(0), toHost.getInterfaces().get(0));
+        		//System.out.println(host.getInterfaces().get(0).getAddress()+" and "+toHost.getInterfaces().get(0).getAddress());
+        	}
+        }
+	}
+	
+NetworkInterface
+	/*friendlist*/
+    public List<Friend> friends;  
+    /*friendlist*/
+	
+public List<Friend> getFriends() {
+		return this.friends;
+	}
+	
+FriendsReader (整個class新增) 
+	public List<Friend> readFriends(int hostAddress) {
+		List<Friend> friends = new ArrayList<Friend>();
+		// skip empty and comment lines
+		Pattern skipPattern = Pattern.compile("(#.*)|(^\\s*$)");
+
+		while (scanner.hasNextLine()) {
+			String buff = scanner.nextLine();
+		    String[] spliteStr = buff.split(" ");
+		    int node1 = Integer.valueOf(spliteStr[0]);     
+		    int node2 = Integer.valueOf(spliteStr[1]);                        
+		    if(node1 == hostAddress){		    	
+		    	friends.add(new Friend(hostAddress , node2));
+		    }
+		}
+		return friends;
+	}
+	
+Friend (整個class新增)
+
+public static final String SETTING_FRIENDLISTPATH = "friends1.txt";
+		public int toFriendAddress;
+		public int fromFriendAddress;
+		protected DTNHost toNode;
+		protected NetworkInterface toInterface;
+		protected DTNHost fromNode;
+		protected NetworkInterface fromInterface;
+		protected int friendLevel;
+	
+		public Friend(){
+			this.friendLevel=0;
+		}
+		
+		public Friend(int fromFriendAddress , int toFriendAddress){
+			this.fromFriendAddress = fromFriendAddress;
+			this.toFriendAddress = toFriendAddress;
+			this.friendLevel=1;
+		}
+		
+		public void setFriendHost( DTNHost fromHost , DTNHost toHost){
+			this.fromNode = fromHost;
+			this.toNode = toHost;
+			this.friendLevel=1;
+		}
+		
+		public void setFriendInterface( NetworkInterface fromInterface , NetworkInterface toInterface){
+			this.fromInterface = fromInterface;
+			this.toInterface = toInterface;
+			this.friendLevel=1;
+		}
+		
+		public DTNHost getFromHost(){
+			return this.fromNode;
+		}
+		
+		public DTNHost getToHost(){
+			return this.toNode;
+		}
+		
+		public NetworkInterface getToInterface(){
+			return this.toInterface;
+		}
+		
+		public NetworkInterface getFromInterface(){
+			return this.fromInterface;
+		}
+		
+	
+	

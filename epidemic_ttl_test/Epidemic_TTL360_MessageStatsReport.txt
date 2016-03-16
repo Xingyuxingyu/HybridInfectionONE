@@ -1,0 +1,21 @@
+Message stats for scenario Epidemic_TTL360
+sim_time: 320804.0000
+created: 196
+started: 4904
+relayed: 4899
+aborted: 2
+dropped: 4205
+removed: 0
+delivered: 57
+delivery_prob: 0.2908
+delivery_cost: 24.9949
+response_prob: 0.0000
+overhead_ratio: 84.9474
+latency_avg: 8486.5088
+latency_med: 7095.0000
+hopcount_avg: 3.6316
+hopcount_med: 4
+buffertime_avg: 12481.6074
+buffertime_med: 13444.0000
+rtt_avg: NaN
+rtt_med: NaN

@@ -1,0 +1,21 @@
+Message stats for scenario Epidemic_TTL60
+sim_time: 320804.0000
+created: 196
+started: 2178
+relayed: 2175
+aborted: 0
+dropped: 1967
+removed: 0
+delivered: 27
+delivery_prob: 0.1378
+delivery_cost: 11.0969
+response_prob: 0.0000
+overhead_ratio: 79.5556
+latency_avg: 2218.8519
+latency_med: 2154.0000
+hopcount_avg: 2.9259
+hopcount_med: 2
+buffertime_avg: 1503.8973
+buffertime_med: 1241.0000
+rtt_avg: NaN
+rtt_med: NaN

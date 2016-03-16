@@ -14,4 +14,4 @@ Group.msgTtl = -1
 
 # MessageStatsReport is enabled by default_settings.txt but 
 # let's override the report directory path setting
-Report.reportDir = Epidemic_Sigcomm10/
+Report.reportDir = Epidemic_Sigcommb0m1/

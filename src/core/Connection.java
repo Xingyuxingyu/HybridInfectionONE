@@ -15,6 +15,7 @@ public abstract class Connection {
 	protected DTNHost fromNode;
 	protected NetworkInterface fromInterface;
 	protected DTNHost msgFromNode;
+	protected double InfectionRate = 0; 
 
 	private boolean isUp;
 	protected Message msgOnFly;
@@ -215,6 +216,22 @@ public abstract class Connection {
 		(isUp() ? "up":"down") + 
 		(this.msgOnFly != null ? " transferring " + this.msgOnFly  + 
 				" from " + this.msgFromNode : "");
+	}
+	
+	public void setInfectionRate(double rate){
+		this.InfectionRate = rate;
+	}
+	
+	public double getInfectionRate(){
+		return this.InfectionRate;
+	}
+	
+	public DTNHost getTo(){
+		return this.toNode;
+	}
+	
+	public DTNHost getFrom(){
+		return this.fromNode;
 	}
 	
 

@@ -46,8 +46,8 @@ public abstract class ActiveRouter extends MessageRouter {
 	private double lastTtlCheck;
 	
 	/*Bei*/
-	private double DTNInfectionRate = 0.05;
-	private double OSNInfectionRate = 0.05;
+	private double DTNInfectionRate = 0;
+	private double OSNInfectionRate = 1;
 	
 
 	/**
@@ -118,7 +118,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	
 	@Override
 	public int receiveMessage(Message m, DTNHost from) {
-		int recvCheck = checkReceiving(m); 
+		int recvCheck = checkReceiving(m ,from); 
 		if (recvCheck != RCV_OK) {
 			return recvCheck;
 		}
@@ -168,7 +168,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	 * @return the value returned by 
 	 * {@link Connection#startTransfer(DTNHost, Message)}
 	 */
-	protected int startTransfer(Message m, Connection con, double routingRatio) {
+	protected int startTransfer(Message m, Connection con) {
 		int retVal;
 		
 		if (!con.isReadyForTransfer()) {
@@ -178,7 +178,7 @@ public abstract class ActiveRouter extends MessageRouter {
 		retVal = con.startTransfer(getHost(), m);
 		
 		/*Math.random - infection ratio*/
-		if (retVal == RCV_OK && Math.random() <= routingRatio ) { // started transfer
+		if (retVal == RCV_OK ) { // started transfer
 			addToSendingConnections(con);
 		}
 		
@@ -219,7 +219,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	 * this router (as final recipient), or DENIED_NO_SPACE if the message
 	 * does not fit into buffer
 	 */
-	protected int checkReceiving(Message m) {
+	protected int checkReceiving(Message m ,DTNHost from) {
 		if (isTransferring()) {
 			return TRY_LATER_BUSY; // only one connection at a time
 		}
@@ -238,8 +238,20 @@ public abstract class ActiveRouter extends MessageRouter {
 			return DENIED_NO_SPACE; // couldn't fit into buffer -> reject
 		}
 		
+		for (Connection con : from.getConnections()){
+			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
+				if (Math.random() < DTNInfectionRate){
+					return RCV_OK;
+				}
+				else return DENIED_UNINFECTED;
+			}
+		}
 		
-		return RCV_OK;
+		if (Math.random() < OSNInfectionRate){
+			return RCV_OK;
+		}
+								
+		return DENIED_UNINFECTED;
 	}
 	
 	/** 
@@ -376,28 +388,6 @@ public abstract class ActiveRouter extends MessageRouter {
 		return null;
 	}
 	
-	 private int startTransfer(Message m, Connection con) {
-		 int retVal;
-			
-			if (!con.isReadyForTransfer()) {
-				return TRY_LATER_BUSY;
-			}
-			
-			retVal = con.startTransfer(getHost(), m);
-			
-			/*Math.random - infection ratio*/
-			if (retVal == RCV_OK) { // started transfer
-				addToSendingConnections(con);
-			}
-			
-			else if (deleteDelivered && retVal == DENIED_OLD && 
-					m.getTo() == con.getOtherNode(this.getHost())) {
-				/* final recipient has already received the msg -> delete it */
-				this.deleteMessage(m.getId(), false);
-			}
-			
-			return retVal;
-	}
 
 	/**
 	  * Goes trough the messages until the other node accepts one
@@ -408,9 +398,9 @@ public abstract class ActiveRouter extends MessageRouter {
 	  * @return The message whose transfer was started or null if no 
 	  * transfer was started. 
 	  */
-	protected Message tryAllMessages(Connection con, List<Message> messages,double routingRatio) {
+	protected Message tryAllMessages(Connection con, List<Message> messages) {
 		for (Message m : messages) {
-			int retVal = startTransfer(m, con,routingRatio); 
+			int retVal = startTransfer(m, con); 
 			if (retVal == RCV_OK) {
 				return m;	// accepted a message, don't try others
 			}
@@ -441,7 +431,8 @@ public abstract class ActiveRouter extends MessageRouter {
 		for (int i=0, n=connections.size(); i<n; i++) {
 
 			Connection con = connections.get(i);
-			Message started = tryAllMessages(con, messages, DTNInfectionRate); 
+			con.setInfectionRate(DTNInfectionRate);
+			Message started = tryAllMessages(con, messages); 
 			if (started != null) { 
 				return con;
 			}
@@ -456,8 +447,9 @@ public abstract class ActiveRouter extends MessageRouter {
 			
 			Connection friendcon = new CBRConnection(fromNode, fromInter, toNode, toInter,1);
 			friendcon.setUpState(true);
+			friendcon.setInfectionRate(OSNInfectionRate);
 			
-			Message startedFriend = tryAllMessages(friendcon, messages, OSNInfectionRate); 
+			Message startedFriend = tryAllMessages(friendcon, messages); 
 			if (startedFriend != null) { 
 				return friendcon;
 			}

@@ -238,7 +238,7 @@ public class DecisionEngineRouter extends ActiveRouter
 	}
 	
 	@Override
-	protected int startTransfer(Message m, Connection con, double RoutingRatio)
+	protected int startTransfer(Message m, Connection con)
 	{
 		int retVal;
 		

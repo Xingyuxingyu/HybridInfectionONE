@@ -46,8 +46,8 @@ public abstract class ActiveRouter extends MessageRouter {
 	private double lastTtlCheck;
 	
 	/*Bei*/
-	private double DTNInfectionRate = 0;
-	private double OSNInfectionRate = 1;
+	private double DTNInfectionRate = 0.001;
+	private double OSNInfectionRate = 0.001;
 	
 
 	/**

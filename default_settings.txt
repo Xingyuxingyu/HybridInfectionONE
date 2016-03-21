@@ -2,7 +2,7 @@
 Scenario.name = simbet_D01%%Group.router%%%
 Scenario.simulateConnections = false
 Scenario.updateInterval = 1
-Scenario.endTime = 320804
+Scenario.endTime = 2911416
 Scenario.nrofHostGroups = 1
 
 
@@ -18,7 +18,7 @@ Group.bufferSize = 50M
 Group.nrofInterfaces = 1
 Group.interface1 = btInterface
 Group.speed = 0, 0.1
-Group.nrofHosts = 78
+Group.nrofHosts = 24
 Group.groupID = n
 
 
@@ -26,10 +26,10 @@ Events.nrof = 2
 Events1.class = ExternalEventsQueue
 Events2.class = InfectionMessageGenerator
 ExternalEvents.nrofPreload = 500
-Events1.filePath = ee/sigcomm-1.txt
+Events1.filePath = ee/UPB-1.txt
 Events2.interval = 0
-Events2.hosts = 0,75
-Events2.tohosts = 76,77
+Events2.hosts = 0,22
+Events2.tohosts = 23,24
 Events2.prefix = Y
 Events2.size = 0
 ########################
@@ -42,11 +42,11 @@ MovementModel.rngSeed = 66
 
 
 # how many reports to load
-Report.nrofReports = 3
-Report.report1 = MessageStatsReport
+Report.nrofReports = 4
+Report.report1 = ContactTimesReport
 Report.report2 = InfectedReport
 Report.report3 = MessageDeliveryReport
-
+Report.report4 = MessageStatsReport
 
 ## Default settings for some routers settings
 ProphetV2Router.secondsInTimeUnit = 30

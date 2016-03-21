@@ -42,12 +42,12 @@ MovementModel.rngSeed = 66
 
 
 # how many reports to load
-Report.nrofReports = 5
-Report.report1 = MessageStatsReport
-Report.report2 = ContactTimesReport
-Report.report3 = ConnectivityONEReport
-Report.report4 = MessageDelayReport
-Report.report5 = MessageDeliveryReport
+# how many reports to load
+Report.nrofReports = 4
+Report.report1 = ContactTimesReport
+Report.report2 = InfectedReport
+Report.report3 = MessageDeliveryReport
+Report.report4 = MessageStatsReport
 
 ## Default settings for some routers settings
 ProphetV2Router.secondsInTimeUnit = 30

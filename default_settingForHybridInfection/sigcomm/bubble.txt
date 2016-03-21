@@ -9,8 +9,9 @@ Scenario.name = Epidemic_TTL%%Group.msgTtl%%
 
 # Use TTL of 1, 6 and 12 hours (TTL value is given in minutes)
 
-Group.msgTtl =  [30240;20160;10080;5760;2880;1440;360;180;60;10;2]
+# Group.msgTtl =  [30240;20160;10080;5760;2880;1440;360;180;60;10;2]
+Group.msgTtl = -1
 
 # MessageStatsReport is enabled by default_settings.txt but 
 # let's override the report directory path setting
-Report.reportDir = Epidemic_ttl_test/
+Report.reportDir = Epidemic_SigcommMMS0.0005/

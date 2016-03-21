@@ -2,7 +2,7 @@
 Scenario.name = simbet_D01%%Group.router%%%
 Scenario.simulateConnections = false
 Scenario.updateInterval = 1
-Scenario.endTime = 320804
+Scenario.endTime = 6298670
 Scenario.nrofHostGroups = 1
 
 
@@ -18,7 +18,7 @@ Group.bufferSize = 50M
 Group.nrofInterfaces = 1
 Group.interface1 = btInterface
 Group.speed = 0, 0.1
-Group.nrofHosts = 78
+Group.nrofHosts = 27
 Group.groupID = n
 
 
@@ -26,10 +26,10 @@ Events.nrof = 2
 Events1.class = ExternalEventsQueue
 Events2.class = OneToEachMessageGenerator
 ExternalEvents.nrofPreload = 500
-Events1.filePath = ee/sigcomm-1.txt
+Events1.filePath = ee/UPB-1.txt
 Events2.interval = 0
-Events2.hosts = 0,75
-Events2.tohosts = 77,78
+Events2.hosts = 0,24
+Events2.tohosts = 25,26
 Events2.prefix = Y
 Events2.size = 1k
 ########################

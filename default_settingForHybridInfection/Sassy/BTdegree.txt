@@ -1,0 +1,27 @@
+node	0:nrofneighbors=	14	nrofcontacts=	291
+node	1:nrofneighbors=	17	nrofcontacts=	191
+node	2:nrofneighbors=	8	nrofcontacts=	78
+node	3:nrofneighbors=	13	nrofcontacts=	296
+node	4:nrofneighbors=	13	nrofcontacts=	956
+node	5:nrofneighbors=	6	nrofcontacts=	30
+node	6:nrofneighbors=	9	nrofcontacts=	166
+node	7:nrofneighbors=	12	nrofcontacts=	269
+node	8:nrofneighbors=	7	nrofcontacts=	154
+node	9:nrofneighbors=	2	nrofcontacts=	8
+node	10:nrofneighbors=	8	nrofcontacts=	47
+node	11:nrofneighbors=	2	nrofcontacts=	22
+node	12:nrofneighbors=	2	nrofcontacts=	9
+node	13:nrofneighbors=	6	nrofcontacts=	154
+node	14:nrofneighbors=	6	nrofcontacts=	303
+node	15:nrofneighbors=	1	nrofcontacts=	19
+node	16:nrofneighbors=	2	nrofcontacts=	8
+node	17:nrofneighbors=	1	nrofcontacts=	17
+node	18:nrofneighbors=	1	nrofcontacts=	4
+node	19:nrofneighbors=	0	nrofcontacts=	0
+node	20:nrofneighbors=	3	nrofcontacts=	776
+node	21:nrofneighbors=	2	nrofcontacts=	152
+node	22:nrofneighbors=	0	nrofcontacts=	0
+node	23:nrofneighbors=	0	nrofcontacts=	0
+node	24:nrofneighbors=	0	nrofcontacts=	0
+BTdegree=	5
+sumofcontacts=	3950

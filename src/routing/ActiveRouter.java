@@ -46,8 +46,9 @@ public abstract class ActiveRouter extends MessageRouter {
 	private double lastTtlCheck;
 	
 	/*Bei*/
-	private double DTNInfectionRate = 0.001;
+	private double DTNInfectionRate = 0;
 	private double OSNInfectionRate = 0.001;
+	private int OSNInterval = 180;
 	
 
 	/**
@@ -438,23 +439,26 @@ public abstract class ActiveRouter extends MessageRouter {
 			}
 		}
 		/*testForFriend*/
-		for (int j=0, m=friends.size(); j<m; j++) {
-			Friend friend = friends.get(j);
-			DTNHost fromNode = friend.getFromHost();
-			DTNHost toNode = friend.getToHost();
-			NetworkInterface fromInter= friend.getFromInterface();
-			NetworkInterface toInter= friend.getToInterface();
+		if(SimClock.getIntTime() % OSNInterval == 0){
+			for (int j=0, m=friends.size(); j<m; j++) {
+				Friend friend = friends.get(j);
+				DTNHost fromNode = friend.getFromHost();
+				DTNHost toNode = friend.getToHost();
+				NetworkInterface fromInter= friend.getFromInterface();
+				NetworkInterface toInter= friend.getToInterface();
 			
-			Connection friendcon = new CBRConnection(fromNode, fromInter, toNode, toInter,1);
-			friendcon.setUpState(true);
-			friendcon.setInfectionRate(OSNInfectionRate);
+				Connection friendcon = new CBRConnection(fromNode, fromInter, toNode, toInter,1);
+				friendcon.setUpState(true);
+				friendcon.setInfectionRate(OSNInfectionRate);
 			
-			Message startedFriend = tryAllMessages(friendcon, messages); 
-			if (startedFriend != null) { 
+				Message startedFriend = tryAllMessages(friendcon, messages); 
+				if (startedFriend != null) { 
 				return friendcon;
-			}
+				}
 		
+			}
 		}
+		
 		/*testForFriend*/
 		
 		return null;

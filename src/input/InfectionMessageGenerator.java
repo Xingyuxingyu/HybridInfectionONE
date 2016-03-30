@@ -23,7 +23,8 @@ public class InfectionMessageGenerator extends MessageEventGenerator {
 		for (int i = toHostRange[0]; i < toHostRange[1]; i++) {
 			toIds.add(i);
 		}
-		from = drawHostAddress(hostRange);
+		//from = drawHostAddress(hostRange);
+		from = 6;
 	}
 
 	

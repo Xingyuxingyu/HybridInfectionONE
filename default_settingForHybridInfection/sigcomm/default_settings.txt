@@ -24,7 +24,7 @@ Group.groupID = n
 
 Events.nrof = 2
 Events1.class = ExternalEventsQueue
-Events2.class = OneToEachMessageGenerator
+Events2.class = InfectionMessageGenerator
 ExternalEvents.nrofPreload = 500
 Events1.filePath = ee/sigcomm-1.txt
 Events2.interval = 0

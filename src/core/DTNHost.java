@@ -4,11 +4,7 @@
  */
 package core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 
 import movement.MovementModel;
@@ -303,8 +299,8 @@ public class DTNHost implements Comparable<DTNHost> {
 			assert (ni != null) : "Tried to use a nonexisting interfacetype "+interfaceId;
 			assert (no != null) : "Tried to use a nonexisting interfacetype "+interfaceId;
 		} else {
-			ni = getInterface(1);
-			no = anotherHost.getInterface(1);
+			ni = getInterface(2);
+			no = anotherHost.getInterface(2);
 			
 			assert (ni.getInterfaceType().equals(no.getInterfaceType())) : 
 				"Interface types do not match.  Please specify interface type explicitly";

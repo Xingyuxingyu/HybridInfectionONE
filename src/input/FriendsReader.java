@@ -33,7 +33,7 @@ public class FriendsReader implements ExternalEventsReader {
 
 		while (scanner.hasNextLine()) {
 			String buff = scanner.nextLine();
-		    String[] spliteStr = buff.split(" ");
+		    String[] spliteStr = buff.split("	");
 		    int node1 = Integer.valueOf(spliteStr[0]);     
 		    int node2 = Integer.valueOf(spliteStr[1]);                        
 		    if(node1 == hostAddress){		    	

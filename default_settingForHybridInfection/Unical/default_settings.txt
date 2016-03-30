@@ -2,7 +2,7 @@
 Scenario.name = simbet_D01%%Group.router%%%
 Scenario.simulateConnections = false
 Scenario.updateInterval = 1
-Scenario.endTime = 709596918
+Scenario.endTime = 709780
 Scenario.nrofHostGroups = 1
 
 
@@ -24,7 +24,7 @@ Group.groupID = n
 
 Events.nrof = 2
 Events1.class = ExternalEventsQueue
-Events2.class = OneToEachMessageGenerator
+Events2.class = InfectionMessageGenerator
 ExternalEvents.nrofPreload = 500
 Events1.filePath = ee/Unical-1.txt
 Events2.interval = 0

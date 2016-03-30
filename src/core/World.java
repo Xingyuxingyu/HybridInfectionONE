@@ -303,6 +303,8 @@ public class World {
         		DTNHost toHost = getNodeByAddress(friend.toFriendAddress);
         		friend.setFriendHost(host, toHost);
         		friend.setFriendInterface(host.getInterfaces().get(0), toHost.getInterfaces().get(0));
+        		friend.getFromInterface().createConnection(friend.getToInterface());
+								
         		//System.out.println(host.getInterfaces().get(0).getAddress()+" and "+toHost.getInterfaces().get(0).getAddress());
         	}
         }

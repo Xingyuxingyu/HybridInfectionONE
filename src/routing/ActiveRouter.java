@@ -48,7 +48,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	/*Bei*/
 	private double DTNInfectionRate = 0;
 	private double OSNInfectionRate = 0.001;
-	private int OSNInterval = 180;
+	//private int OSNInterval = 1;
 	
 
 	/**
@@ -239,7 +239,25 @@ public abstract class ActiveRouter extends MessageRouter {
 			return DENIED_NO_SPACE; // couldn't fit into buffer -> reject
 		}
 		
-		for (Connection con : from.getConnections()){
+		for (Connection con : from.getInterfaces().get(0).getConnections()){			
+			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
+				if (Math.random() < OSNInfectionRate){
+					return RCV_OK;
+				}
+			}
+		}
+		
+		for (Connection con : from.getInterfaces().get(1).getConnections()){
+			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
+				if (Math.random() < DTNInfectionRate){
+					return RCV_OK;
+				}
+			}
+		}
+		
+		
+		
+		/*for (Connection con : from.getConnections()){
 			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
 				if (Math.random() < DTNInfectionRate){
 					return RCV_OK;
@@ -250,7 +268,7 @@ public abstract class ActiveRouter extends MessageRouter {
 		
 		if (Math.random() < OSNInfectionRate){
 			return RCV_OK;
-		}
+		}*/
 								
 		return DENIED_UNINFECTED;
 	}
@@ -429,7 +447,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	protected Connection tryMessagesToConnections(List<Message> messages,
 			List<Connection> connections,List<Friend> friends) {
 
-		for (int i=0, n=connections.size(); i<n; i++) {
+		/*for (int i=0, n=connections.size(); i<n; i++) {
 
 			Connection con = connections.get(i);
 			con.setInfectionRate(DTNInfectionRate);
@@ -437,10 +455,10 @@ public abstract class ActiveRouter extends MessageRouter {
 			if (started != null) { 
 				return con;
 			}
-		}
+		}*/
 		/*testForFriend*/
-		if(SimClock.getIntTime() % OSNInterval == 0){
-			for (int j=0, m=friends.size(); j<m; j++) {
+		//if(SimClock.getIntTime() % OSNInterval == 0){
+			/*for (int j=0, m=friends.size(); j<m; j++) {
 				Friend friend = friends.get(j);
 				DTNHost fromNode = friend.getFromHost();
 				DTNHost toNode = friend.getToHost();
@@ -456,10 +474,20 @@ public abstract class ActiveRouter extends MessageRouter {
 				return friendcon;
 				}
 		
-			}
-		}
+			}*/
+		//}
 		
 		/*testForFriend*/
+		
+			for (int i=0, n=connections.size(); i<n; i++) {
+
+				Connection con = connections.get(i);
+
+				Message started = tryAllMessages(con, messages); 
+				if (started != null) { 
+					return con;
+				}
+			}
 		
 		return null;
 	}

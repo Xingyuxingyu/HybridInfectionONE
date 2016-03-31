@@ -11,12 +11,14 @@ btInterface.transmitSpeed = 1M
 btInterface.transmitRange = 10
 
 
+
 ###################################
 Group.movementModel = RandomWaypoint
 Group.router = EpidemicRouter
 Group.bufferSize = 50M
-Group.nrofInterfaces = 1
+Group.nrofInterfaces = 2
 Group.interface1 = btInterface
+Group.interface2 = btInterface
 Group.speed = 0, 0.1
 Group.nrofHosts = 20
 Group.groupID = n

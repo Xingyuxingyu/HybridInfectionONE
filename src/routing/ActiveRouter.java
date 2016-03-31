@@ -46,8 +46,8 @@ public abstract class ActiveRouter extends MessageRouter {
 	private double lastTtlCheck;
 	
 	/*Bei*/
-	private double DTNInfectionRate = 0;
-	private double OSNInfectionRate = 0.001;
+	private double DTNInfectionRate = 0.001;
+	private double OSNInfectionRate = 0;
 	//private int OSNInterval = 1;
 	
 
@@ -241,15 +241,20 @@ public abstract class ActiveRouter extends MessageRouter {
 		
 		for (Connection con : from.getInterfaces().get(0).getConnections()){			
 			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
+				//System.out.println("3");
 				if (Math.random() < OSNInfectionRate){
+					//System.out.println("4");
 					return RCV_OK;
 				}
 			}
 		}
 		
 		for (Connection con : from.getInterfaces().get(1).getConnections()){
+			//System.out.println("!");
 			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
+				//System.out.println("1");
 				if (Math.random() < DTNInfectionRate){
+					//System.out.println("2");
 					return RCV_OK;
 				}
 			}

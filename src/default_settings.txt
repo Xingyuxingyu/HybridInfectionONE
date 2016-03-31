@@ -28,9 +28,9 @@ Events.nrof = 2
 Events1.class = ExternalEventsQueue
 Events2.class = InfectionMessageGenerator
 ExternalEvents.nrofPreload = 500
-Events1.filePath = ee/18nodesassy3.txt
+Events1.filePath = ee/18nodeupb3.txt
 Events2.interval = 0
-Events2.hosts = 0,17
+Events2.hosts = 6
 Events2.tohosts = 18,19
 Events2.prefix = Y
 Events2.size = 0
@@ -44,11 +44,9 @@ MovementModel.rngSeed = 66
 
 
 # how many reports to load
-Report.nrofReports = 4
-Report.report1 = ContactTimesReport
-Report.report2 = InfectedReport
-Report.report3 = MessageDeliveryReport
-Report.report4 = MessageStatsReport
+Report.nrofReports = 1
+Report.report1 = InfectedReport
+
 
 ## Default settings for some routers settings
 ProphetV2Router.secondsInTimeUnit = 30

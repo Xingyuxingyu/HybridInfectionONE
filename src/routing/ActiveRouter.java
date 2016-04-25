@@ -4,7 +4,7 @@
  */
 package routing;
 
-import input.Friend;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,12 +12,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import core.CBRConnection;
 import core.Connection;
 import core.DTNHost;
 import core.Message;
 import core.MessageListener;
-import core.NetworkInterface;
 import core.Settings;
 import core.SimClock;
 import core.Tuple;
@@ -45,10 +43,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	/** sim time when the last TTL check was done */
 	private double lastTtlCheck;
 	
-	/*Bei*/
-	private double DTNInfectionRate = 0.001;
-	private double OSNInfectionRate = 0;
-	//private int OSNInterval = 1;
+	
 	
 
 	/**
@@ -119,7 +114,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	
 	@Override
 	public int receiveMessage(Message m, DTNHost from) {
-		int recvCheck = checkReceiving(m ,from); 
+		int recvCheck = checkReceiving(m); 
 		if (recvCheck != RCV_OK) {
 			return recvCheck;
 		}
@@ -157,9 +152,7 @@ public abstract class ActiveRouter extends MessageRouter {
 		return getHost().getConnections();
 	}
 	
-	protected List<Friend> getFriends() {
-		return getHost().getInterfaces().get(0).getFriends();
-	}
+	
 	
 	/**
 	 * Tries to start a transfer of message using a connection. Is starting
@@ -201,7 +194,7 @@ public abstract class ActiveRouter extends MessageRouter {
 		if (this.getNrofMessages() == 0) {
 			return false;
 		}
-		if (this.getConnections().size() == 0 && this.getFriends().size() == 0) {
+		if (this.getConnections().size() == 0) {
 			return false;
 		}
 		
@@ -220,7 +213,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	 * this router (as final recipient), or DENIED_NO_SPACE if the message
 	 * does not fit into buffer
 	 */
-	protected int checkReceiving(Message m ,DTNHost from) {
+	protected int checkReceiving(Message m) {
 		if (isTransferring()) {
 			return TRY_LATER_BUSY; // only one connection at a time
 		}
@@ -239,44 +232,12 @@ public abstract class ActiveRouter extends MessageRouter {
 			return DENIED_NO_SPACE; // couldn't fit into buffer -> reject
 		}
 		
-		for (Connection con : from.getInterfaces().get(0).getConnections()){			
-			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
-				//System.out.println("3");
-				if (Math.random() < OSNInfectionRate){
-					//System.out.println("4");
-					return RCV_OK;
-				}
-			}
-		}
-		
-		for (Connection con : from.getInterfaces().get(1).getConnections()){
-			//System.out.println("!");
-			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
-				//System.out.println("1");
-				if (Math.random() < DTNInfectionRate){
-					//System.out.println("2");
-					return RCV_OK;
-				}
-			}
-		}
-		
-		
-		
-		/*for (Connection con : from.getConnections()){
-			if (con.getOtherNode(this.getHost())== from && con.getOtherNode(from)== this.getHost()){
-				if (Math.random() < DTNInfectionRate){
-					return RCV_OK;
-				}
-				else return DENIED_UNINFECTED;
-			}
-		}
-		
-		if (Math.random() < OSNInfectionRate){
-			return RCV_OK;
-		}*/
-								
-		return DENIED_UNINFECTED;
+		return RCV_OK;
 	}
+		
+		
+		
+		
 	
 	/** 
 	 * Removes messages from the buffer (oldest first) until
@@ -450,49 +411,14 @@ public abstract class ActiveRouter extends MessageRouter {
 	 * accepted a message.
 	 */
 	protected Connection tryMessagesToConnections(List<Message> messages,
-			List<Connection> connections,List<Friend> friends) {
-
-		/*for (int i=0, n=connections.size(); i<n; i++) {
-
+			List<Connection> connections) {
+		for (int i=0, n=connections.size(); i<n; i++) {
 			Connection con = connections.get(i);
-			con.setInfectionRate(DTNInfectionRate);
 			Message started = tryAllMessages(con, messages); 
 			if (started != null) { 
 				return con;
 			}
-		}*/
-		/*testForFriend*/
-		//if(SimClock.getIntTime() % OSNInterval == 0){
-			/*for (int j=0, m=friends.size(); j<m; j++) {
-				Friend friend = friends.get(j);
-				DTNHost fromNode = friend.getFromHost();
-				DTNHost toNode = friend.getToHost();
-				NetworkInterface fromInter= friend.getFromInterface();
-				NetworkInterface toInter= friend.getToInterface();
-			
-				Connection friendcon = new CBRConnection(fromNode, fromInter, toNode, toInter,1);
-				friendcon.setUpState(true);
-				friendcon.setInfectionRate(OSNInfectionRate);
-			
-				Message startedFriend = tryAllMessages(friendcon, messages); 
-				if (startedFriend != null) { 
-				return friendcon;
-				}
-		
-			}*/
-		//}
-		
-		/*testForFriend*/
-		
-			for (int i=0, n=connections.size(); i<n; i++) {
-
-				Connection con = connections.get(i);
-
-				Message started = tryAllMessages(con, messages); 
-				if (started != null) { 
-					return con;
-				}
-			}
+		}
 		
 		return null;
 	}
@@ -505,12 +431,10 @@ public abstract class ActiveRouter extends MessageRouter {
 	 * @return The connections that started a transfer or null if no connection
 	 * accepted a message.
 	 */
+	
 	protected Connection tryAllMessagesToAllConnections(){
-		//add friendList(everything about friend)//
-		List<Friend> friends = getFriends();
 		List<Connection> connections = getConnections();
-		/*friend*/
-		if ((friends.size() == 0 && connections.size() == 0) || this.getNrofMessages() == 0) {
+		if (connections.size() == 0 || this.getNrofMessages() == 0) {
 			return null;
 		}
 
@@ -518,7 +442,7 @@ public abstract class ActiveRouter extends MessageRouter {
 			new ArrayList<Message>(this.getMessageCollection());
 		this.sortByQueueMode(messages);
 
-		return tryMessagesToConnections(messages, connections, friends);
+		return tryMessagesToConnections(messages, connections);
 	}
 		
 	/**
@@ -588,8 +512,7 @@ public abstract class ActiveRouter extends MessageRouter {
 		if (this.sendingConnections.size() > 0) {
 			return true; // sending something
 		}
-		
-		/*&& this.getFriends().size() == 0*/
+				
 		if (this.getHost().getConnections().size() == 0 ) {
 			return false; // not connected
 		}
@@ -693,5 +616,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	 * @param con The connection whose transfer was finalized
 	 */
 	protected void transferDone(Connection con) { }
+	
+	
 	
 }

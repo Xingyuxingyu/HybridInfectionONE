@@ -11,7 +11,6 @@ btInterface.transmitSpeed = 1M
 btInterface.transmitRange = 10
 
 
-
 ###################################
 Group.movementModel = RandomWaypoint
 Group.router = EpidemicRouter
@@ -20,7 +19,7 @@ Group.nrofInterfaces = 2
 Group.interface1 = btInterface
 Group.interface2 = btInterface
 Group.speed = 0, 0.1
-Group.nrofHosts = 20
+Group.nrofHosts = 61
 Group.groupID = n
 
 
@@ -28,12 +27,12 @@ Events.nrof = 2
 Events1.class = ExternalEventsQueue
 Events2.class = InfectionMessageGenerator
 ExternalEvents.nrofPreload = 500
-Events1.filePath = ee/18nodeupb3.txt
+Events1.filePath = ee/59SocialEvaluation.txt
 Events2.interval = 0
-Events2.hosts = 6
-Events2.tohosts = 18,19
+Events2.hosts = 0,58
+Events2.tohosts = 59,60
 Events2.prefix = Y
-Events2.size = 0
+Events2.size = 1k
 ########################
 
 
@@ -43,6 +42,7 @@ MovementModel.worldSize = 10000, 8000
 MovementModel.rngSeed = 66
 
 
+# how many reports to load
 # how many reports to load
 Report.nrofReports = 1
 Report.report1 = InfectedReport

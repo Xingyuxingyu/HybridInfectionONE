@@ -19,7 +19,7 @@ Group.nrofInterfaces = 2
 Group.interface1 = btInterface
 Group.interface2 = btInterface
 Group.speed = 0, 0.1
-Group.nrofHosts = 17
+Group.nrofHosts = 78
 Group.groupID = n
 
 
@@ -27,10 +27,10 @@ Events.nrof = 2
 Events1.class = ExternalEventsQueue
 Events2.class = InfectionMessageGenerator
 ExternalEvents.nrofPreload = 500
-Events1.filePath = ee/Unical-1.txt
+Events1.filePath = ee/sigcomm3.txt
 Events2.interval = 0
-Events2.hosts = 0,14
-Events2.tohosts = 15,16
+Events2.hosts = 0,75
+Events2.tohosts = 77,78
 Events2.prefix = Y
 Events2.size = 1k
 ########################

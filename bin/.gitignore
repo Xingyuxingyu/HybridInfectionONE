@@ -1,6 +1,11 @@
 /randomEpidemic_Sassy/
 /randomEpidemic_Sigcomm/
-/Epidemic_UPB0.001/
+/randomEpidemic_SocialEvaluation/
+/randomEpidemic_Unical/
+/report/
+/routing/
+/run.bat
+/test/
 /Epidemic_Unical/
 /bubble.txt
 /compile.bat
@@ -16,7 +21,7 @@
 /lib/
 /movement/
 /one.bat
-/Epidemic_Sassy/
 /Epidemic_Sigcomm/
 /Epidemic_UPB/
-/routing/
+/Epidemic_UPB0.001/
+/Epidemic_Sassy/

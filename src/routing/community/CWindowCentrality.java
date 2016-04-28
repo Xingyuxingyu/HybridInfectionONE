@@ -88,7 +88,7 @@ public class CWindowCentrality implements Centrality
 	protected int lastLocalComputationTime;
 	
 	public CWindowCentrality(Settings s) 
-	{
+	{ //設定參數
 		if(s.contains(CENTRALITY_WINDOW_SETTING))
 			CENTRALITY_TIME_WINDOW = s.getInt(CENTRALITY_WINDOW_SETTING);
 		

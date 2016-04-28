@@ -166,6 +166,7 @@ public abstract class MessageRouter {
 	 */
 	public abstract void changedConnection(Connection con);	
 	
+	
 	/**
 	 * Returns a message by ID.
 	 * @param id ID of the message
@@ -621,4 +622,5 @@ public abstract class MessageRouter {
 			this.getHost().toString() + " with " + getNrofMessages() 
 			+ " messages";
 	}
+
 }

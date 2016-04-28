@@ -50,7 +50,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	protected int transmitSpeed;
 	protected ConnectivityOptimizer optimizer = null;
 	/*friendlist*/
-    public List<Friend> friends;  
+	protected List<Friend> friends;  
     /*friendlist*/
 	/** scanning interval, or 0.0 if n/a */
 	private double scanInterval;

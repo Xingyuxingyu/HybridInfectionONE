@@ -10,6 +10,8 @@ import input.Friend;
 import input.FriendsReader;
 import input.ScheduledUpdatesQueue;
 import interfaces.ConnectivityGrid;
+import routing.DecisionEngineRouter;
+import routing.HybridStrategyRouter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -299,7 +301,6 @@ public class World {
             this.reader = new FriendsReader(friendFile);
         	host.getInterfaces().get(0).friends = reader.readFriends(host.getAddress());
         	for(Friend friend : host.getInterfaces().get(0).friends){
-        		
         		DTNHost toHost = getNodeByAddress(friend.toFriendAddress);
         		friend.setFriendHost(host, toHost);
         		friend.setFriendInterface(host.getInterfaces().get(0), toHost.getInterfaces().get(0));

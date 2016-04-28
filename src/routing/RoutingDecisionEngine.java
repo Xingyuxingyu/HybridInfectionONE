@@ -10,6 +10,9 @@ import core.*;
  */
 public interface RoutingDecisionEngine
 {
+	
+	
+	public void FBread(DTNHost thisHost);
 	/**
 	 * Called when a connection goes up between this host and a peer. Note that,
 	 * doExchangeForNewConnection() may be called first.
@@ -87,7 +90,10 @@ public interface RoutingDecisionEngine
 	 * @return true if the message should be sent. False otherwise.
 	 */
 	public boolean shouldSendMessageToHost(Message m, DTNHost otherHost);
+	//FBHost
 	
+	public boolean shouldSendMessageToFBHost(Message m, DTNHost otherHost);
+		
 	/**
 	 * Called after a message is sent to some other peer to ask if it should now
 	 * be deleted from the message store. 

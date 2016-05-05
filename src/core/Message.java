@@ -36,6 +36,8 @@ public class Message implements Comparable<Message> {
 	/** Initial TTL of the message */
 	private int initTtl;
 	
+	private int nrofFBtrans;
+	
 	
 	/** if a response to this message is required, this is the size of the 
 	 * response message (or 0 if no response is requested) */
@@ -79,6 +81,7 @@ public class Message implements Comparable<Message> {
 		this.requestMsg = null;
 		this.properties = null;
 		this.appID = null;
+		this.nrofFBtrans = 0;
 		
 		Message.nextUniqueId++;
 		addNodeOnPath(from);
@@ -268,6 +271,8 @@ public class Message implements Comparable<Message> {
 		this.requestMsg  = m.requestMsg;
 		this.initTtl = m.initTtl;
 		this.appID = m.appID;
+		/*new*/
+		this.nrofFBtrans = m.nrofFBtrans;
 		
 		if (m.properties != null) {
 			Set<String> keys = m.properties.keySet();
@@ -364,6 +369,14 @@ public class Message implements Comparable<Message> {
 	 */
 	public void setAppID(String appID) {
 		this.appID = appID;
+	}
+	
+	public void addnrofFBtrans(int times) {
+		this.nrofFBtrans = this.nrofFBtrans + times;
+	}
+	
+	public int getnrofFBtrans() {
+		return this.nrofFBtrans;
 	}
 	
 }

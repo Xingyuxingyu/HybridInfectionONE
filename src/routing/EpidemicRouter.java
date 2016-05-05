@@ -25,7 +25,7 @@ public class EpidemicRouter extends ActiveRouter {
 	
 	/*Bei*/
 	private double DTNInfectionRate = 0.0001;
-	private double OSNInfectionRate = 0;
+	private double OSNInfectionRate = 0.0001;
 	//private int OSNInterval = 1;
 	
 	/**

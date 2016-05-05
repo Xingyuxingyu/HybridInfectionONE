@@ -1,5 +1,8 @@
 package routing;
 
+import java.util.Map;
+
+import routing.community.FBStatus;
 import core.*;
 
 /**
@@ -121,4 +124,7 @@ public interface RoutingDecisionEngine
 	 * @return
 	 */
 	public RoutingDecisionEngine replicate();
+	
+	public Map<DTNHost, FBStatus> getFBfriends();
+	
 }

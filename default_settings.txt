@@ -2,7 +2,7 @@
 Scenario.name = simbet_D01%%Group.router%%%
 Scenario.simulateConnections = false
 Scenario.updateInterval = 1
-Scenario.endTime = 1632979
+Scenario.endTime = 320804
 Scenario.nrofHostGroups = 1
 
 
@@ -13,13 +13,13 @@ btInterface.transmitRange = 10
 
 ###################################
 Group.movementModel = RandomWaypoint
-Group.router = DecisionEngineRouter
+Group.router = HybridStrategyRouter
 Group.bufferSize = 50M
 Group.nrofInterfaces = 2
 Group.interface1 = btInterface
 Group.interface2 = btInterface
 Group.speed = 0, 0.1
-Group.nrofHosts = 49
+Group.nrofHosts = 76
 Group.groupID = n
 
 
@@ -27,9 +27,9 @@ Events.nrof = 2
 Events1.class = ExternalEventsQueue
 Events2.class = MessageEventGenerator
 ExternalEvents.nrofPreload = 500
-Events1.filePath = ee/pmtr-dirconn.txt
-Events2.interval = 1632
-Events2.hosts = 0,49
+Events1.filePath = ee/sigcomm-1.txt
+Events2.interval = 3208
+Events2.hosts = 0,75
 Events2.prefix = Y
 Events2.size = 1k
 ########################
@@ -42,12 +42,13 @@ MovementModel.rngSeed = 66
 
 
 # how many reports to load
-Report.nrofReports = 1
+Report.nrofReports = 2
 Report.report1 = MessageStatsReport
+Report.report2 = DeliveredMessagesReport
 
 ## Default settings for some routers settings
 ProphetV2Router.secondsInTimeUnit = 30
-SprayAndWaitRouter.nrofCopies = 6
+SprayAndWaitRouter.nrofCopies = 5
 SprayAndWaitRouter.binaryMode = true
 
 

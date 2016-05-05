@@ -254,11 +254,13 @@ public class DistributedBubbleRap
 	public Set<DTNHost> getLocalCommunity() {return this.community.getLocalCommunity();}
 
 	@Override
-	public void FBread(DTNHost thisHost) {		
+	public void FBread(DTNHost thisHost) {	
 	}
 
 	@Override
 	public boolean shouldSendMessageToFBHost(Message m, DTNHost otherHost) {
 		return false;
 	}
+	
+
 }

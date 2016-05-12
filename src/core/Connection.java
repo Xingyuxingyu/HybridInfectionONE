@@ -21,6 +21,7 @@ public abstract class Connection {
 	protected Message msgOnFly;
 	/** how many bytes this connection has transferred */
 	protected int bytesTransferred;
+	protected boolean isFBedge = false;
 
 	/**
 	 * Creates a new connection between nodes and sets the connection
@@ -234,7 +235,13 @@ public abstract class Connection {
 		return this.fromNode;
 	}
 	
-
+	public void changeFBedge(boolean isfb){		
+			this.isFBedge = isfb;		
+	}
+	
+	public boolean isFBedge(){
+		return this.isFBedge;
+	}
 		
 	}
 

@@ -279,6 +279,9 @@ public class Message implements Comparable<Message> {
 			for (String key : keys) {
 				updateProperty(key, m.getProperty(key));
 			}
+			if (this.getProperty("meet") == (Integer) 2){
+				this.updateProperty("meet", 1);
+			}
 		}
 	}
 	
@@ -309,7 +312,8 @@ public class Message implements Comparable<Message> {
 	 * @return The stored object or null if it isn't found
 	 */
 	public Object getProperty(String key) {
-		if (this.properties == null) {
+		/*加入contain(key)條件*/
+		if (this.properties == null||!this.properties.containsKey(key)) {
 			return null;
 		}
 		return this.properties.get(key);

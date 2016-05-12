@@ -4,6 +4,7 @@
  */
 package routing;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -81,6 +82,7 @@ public abstract class MessageRouter {
 	protected int msgTtl;
 	/** Queue mode for sending messages */
 	private int sendQueueMode;
+	
 
 	/** applications attached to the host */
 	private HashMap<String, Collection<Application>>	applications = null;
@@ -292,6 +294,8 @@ public abstract class MessageRouter {
 				
 		this.putToIncomingBuffer(newMessage, from);		
 		newMessage.addNodeOnPath(this.host);
+		
+		
 		
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferStarted(newMessage, from, getHost());

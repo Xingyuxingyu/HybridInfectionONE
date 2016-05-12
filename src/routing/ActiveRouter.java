@@ -218,7 +218,7 @@ public abstract class ActiveRouter extends MessageRouter {
 			return TRY_LATER_BUSY; // only one connection at a time
 		}
 	
-		if ( hasMessage(m.getId()) || isDeliveredMessage(m) ){
+		if ( hasMessage(m.getId()) || isDeliveredMessage(m)){
 			return DENIED_OLD; // already seen this message -> reject it
 		}
 		

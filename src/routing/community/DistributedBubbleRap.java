@@ -261,6 +261,11 @@ public class DistributedBubbleRap
 	public boolean shouldSendMessageToFBHost(Message m, DTNHost otherHost) {
 		return false;
 	}
+
+	@Override
+	public Map<DTNHost, FBStatus> getFBfriends() {
+		return null;
+	}
 	
 
 }

@@ -3,7 +3,7 @@
 
 # Scenario name will be based on the TTL setting, e.g., "Epidemic_TTL180" 
 # this helps identifying the correct report files
-Scenario.name = BubbleRap_TTL%%Group.msgTtl%%setnew
+Scenario.name = BubbleRap_TTL%%Group.msgTtl%%setmap2
 
 # All nodes should use the Epidemic routing module
 

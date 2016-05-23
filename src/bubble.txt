@@ -7,6 +7,13 @@ Scenario.name = BubbleRap_TTL%%Group.msgTtl%%
 
 # All nodes should use the Epidemic routing module
 
+Group.router = HybridStrategyRouter
+HybridStrategyRouter.decisionEngine = community.DistributedHybridLog
+HybridStrategyRouter.communityDetectAlg = routing.community.KCliqueCommunityDetection
+HybridStrategyRouter.centralityAlg = routing.community.CWindowCentrality
+
+HybridStrategyRouter.K = [2]
+HybridStrategyRouter.familiarThreshold = [1000]
 
 
 
@@ -16,4 +23,4 @@ Group.msgTtl =  [30240;20160;10080;5760;2880;1440;360;180;60;10;2]
 
 # MessageStatsReport is enabled by default_settings.txt but 
 # let's override the report directory path setting
-Report.reportDir = HybridInfection_ttl_testUnical
+Report.reportDir = MyBubbleRap_ttl_testSigcommInactive2new/

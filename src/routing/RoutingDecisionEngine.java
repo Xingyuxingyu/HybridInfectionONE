@@ -44,7 +44,7 @@ public interface RoutingDecisionEngine
 	 * @param con
 	 * @param peer
 	 */
-	public void doExchangeForNewConnection(Connection con, DTNHost peer);
+	public int doExchangeForNewConnection(Connection con, DTNHost peer);
 	
 	/**
 	 * Allows the decision engine to gather information from the given message and

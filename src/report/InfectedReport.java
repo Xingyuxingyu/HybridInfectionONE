@@ -69,4 +69,6 @@ public class InfectedReport extends Report implements MessageListener {
 		//double prob = (1.0 * delivered) / created;
 		write(format(getSimTime()) + "	" + infected +"	"+from +"	"+ to);
 	}
+
+
 }

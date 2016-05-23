@@ -119,6 +119,8 @@ public class SimScenario implements Serializable {
 	private List<UpdateListener> updateListeners;
 	/** Global application event listeners */
 	private List<ApplicationListener> appListeners;
+	/** Global signal event listeners */
+	private List<SignalListener> signalListeners;
 
 	static {
 		DTNSim.registerForReset(SimScenario.class.getCanonicalName());
@@ -153,6 +155,7 @@ public class SimScenario implements Serializable {
 		this.movementListeners = new ArrayList<MovementListener>();
 		this.updateListeners = new ArrayList<UpdateListener>();
 		this.appListeners = new ArrayList<ApplicationListener>();
+		this.signalListeners = new ArrayList<SignalListener>();
 		this.eqHandler = new EventQueueHandler();
 
 		/* TODO: check size from movement models */
@@ -295,6 +298,11 @@ public class SimScenario implements Serializable {
 	 */
 	public void addUpdateListener(UpdateListener ul) {
 		this.updateListeners.add(ul);
+	}
+	
+	/*Bei*/
+	public void addSignalListener(SignalListener sl) {
+		this.signalListeners.add(sl);
 	}
 
 	/**

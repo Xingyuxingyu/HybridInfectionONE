@@ -33,7 +33,7 @@ public interface CommunityDetection
 	 * @param peer Host that connected to this host
 	 * @param peerCD Instance of CommunityDetection residing at the new peer 
 	 */
-	public void newConnection(DTNHost myHost, DTNHost peer, 
+	public int newConnection(DTNHost myHost, DTNHost peer, 
 			CommunityDetection peerCD);
 	
 	/**

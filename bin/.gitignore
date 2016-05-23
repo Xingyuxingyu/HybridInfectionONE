@@ -1,3 +1,4 @@
+/ee/
 /friends-1.txt
 /gui/
 /input/
@@ -15,15 +16,18 @@
 /default_settingForHybridInfection/
 /default_settings.txt
 /doc/
-/ee/
-/MyBubbleRap_ttl_test/
+/data/
+/MyBubbleRap_ttl_testSigcommInactive/
+/MyBubbleRap_ttl_testSigcommInactive2new/
+/MyBubbleRap_ttl_testSigcommInactive4/
 /bubble.txt
 /compile.bat
 /core/
-/data/
 /BubbleRap_ttl_test/
 /DefaultSetting/
 /HybridInfection_ttl_testSigcomm/
 /HybridInfection_ttl_testSigcomm1000/
+/MyBubbleRap_ttl_test/
+/MyBubbleRap_ttl_testSigcomm/
 /applications/
 /interfaces/

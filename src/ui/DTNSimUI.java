@@ -13,6 +13,7 @@ import core.MessageListener;
 import core.MovementListener;
 import core.Settings;
 import core.SettingsError;
+import core.SignalListener;
 import core.SimClock;
 import core.SimError;
 import core.SimScenario;
@@ -151,6 +152,9 @@ public abstract class DTNSimUI {
 		}
 		if (r instanceof ApplicationListener) {
 			scen.addApplicationListener((ApplicationListener)r);
+		}
+		if (r instanceof SignalListener) {
+			scen.addSignalListener((SignalListener)r);
 		}
 
 		this.reports.add(r);

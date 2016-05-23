@@ -58,4 +58,6 @@ public class MessageReport extends Report implements MessageListener {
 	public void messageTransferAborted(Message m, DTNHost from, DTNHost to) {}
 	public void messageTransferStarted(Message m, DTNHost from, DTNHost to) {}
 
+	
+
 }

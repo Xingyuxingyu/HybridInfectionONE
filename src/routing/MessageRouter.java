@@ -20,6 +20,7 @@ import core.Message;
 import core.MessageListener;
 import core.Settings;
 import core.SettingsError;
+import core.SignalListener;
 import core.SimClock;
 import core.SimError;
 import core.Tuple;
@@ -68,6 +69,7 @@ public abstract class MessageRouter {
 	public static final int DENIED_DELIVERED = -4;
 	public static final int DENIED_UNINFECTED = -5;
 	public List<MessageListener> mListeners;
+	public List<SignalListener> sListeners;
 	/** The messages being transferred with msgID_hostName keys */
 	private HashMap<String, Message> incomingMessages;
 	/** The messages this router is carrying */
@@ -86,6 +88,8 @@ public abstract class MessageRouter {
 
 	/** applications attached to the host */
 	private HashMap<String, Collection<Application>>	applications = null;
+	
+
 	
 	/**
 	 * Constructor. Creates a new message router based on the settings in
@@ -116,7 +120,7 @@ public abstract class MessageRouter {
 		}
 		
 	}
-	
+
 	/**
 	 * Initializes the router; i.e. sets the host this router is in and
 	 * message listeners that need to be informed about message related
@@ -351,7 +355,7 @@ public abstract class MessageRouter {
 		
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, this.host,
-					isFirstDelivery);
+					isFirstDelivery, 0);
 		}
 		
 		return aMessage;
@@ -626,5 +630,9 @@ public abstract class MessageRouter {
 			this.getHost().toString() + " with " + getNrofMessages() 
 			+ " messages";
 	}
+
+	
+
+	
 
 }

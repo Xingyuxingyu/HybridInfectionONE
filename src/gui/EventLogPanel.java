@@ -318,5 +318,11 @@ public class EventLogPanel extends JPanel
 		return this.getClass().getSimpleName() + " with " + 
 			this.eventPanes.size() + " events";
 	}
+
+	@Override
+	public void messageTransferred(Message m, DTNHost from, DTNHost to,
+			boolean firstDelivery, int newCost) {
+		
+	}
 	
 }

@@ -33,6 +33,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	private String name;
 	private List<MessageListener> msgListeners;
 	private List<MovementListener> movListeners;
+	private List<SignalListener> sigListeners;
 	private List<NetworkInterface> net;
 	
 	private ModuleCommunicationBus comBus;
@@ -74,6 +75,7 @@ public class DTNHost implements Comparable<DTNHost> {
 
 		this.msgListeners = msgLs;
 		this.movListeners = movLs;
+		
 
 		// create instances by replicating the prototypes
 		this.movement = mmProto.replicate();

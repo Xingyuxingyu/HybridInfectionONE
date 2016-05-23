@@ -237,6 +237,8 @@ public class CWindowCentrality implements Centrality
 		return this.localCentrality;
 		
 	}
+	
+	
 
 	public Centrality replicate()
 	{

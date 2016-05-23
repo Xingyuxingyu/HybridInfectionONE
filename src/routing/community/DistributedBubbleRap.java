@@ -10,6 +10,7 @@ import java.util.*;
 
 import core.*;
 import routing.DecisionEngineRouter;
+import routing.HybridStrategyRouter;
 import routing.MessageRouter;
 import routing.RoutingDecisionEngine;
 
@@ -69,6 +70,7 @@ public class DistributedBubbleRap
 	protected CommunityDetection community;
 	protected Centrality centrality;
 	
+	public int SignalCost = 0;
 	/**
 	 * Constructs a DistributedBubbleRap Decision Engine based upon the settings
 	 * defined in the Settings object parameter. The class looks for the class
@@ -104,6 +106,7 @@ public class DistributedBubbleRap
 		this.centrality = proto.centrality.replicate();
 		startTimestamps = new HashMap<DTNHost, Double>();
 		connHistory = new HashMap<DTNHost, List<Duration>>();
+		
 	}
 
 	public void connectionUp(DTNHost thisHost, DTNHost peer){}
@@ -114,7 +117,7 @@ public class DistributedBubbleRap
 	 * 
 	 * @see routing.RoutingDecisionEngine#doExchangeForNewConnection(core.Connection, core.DTNHost)
 	 */
-	public void doExchangeForNewConnection(Connection con, DTNHost peer)
+	public int doExchangeForNewConnection(Connection con, DTNHost peer)
 	{
 		DTNHost myHost = con.getOtherNode(peer);
 		DistributedBubbleRap de = this.getOtherDecisionEngine(peer);
@@ -122,7 +125,7 @@ public class DistributedBubbleRap
 		this.startTimestamps.put(peer, SimClock.getTime());
 		de.startTimestamps.put(myHost, SimClock.getTime());
 		
-		this.community.newConnection(myHost, peer, de.community);
+		return this.community.newConnection(myHost, peer, de.community);
 	}
 	
 	public void connectionDown(DTNHost thisHost, DTNHost peer)
@@ -186,6 +189,7 @@ public class DistributedBubbleRap
 		// Which of us has the dest in our local communities, this host or the peer
 		boolean peerInCommunity = de.commumesWithHost(dest);
 		boolean meInCommunity = this.commumesWithHost(dest);
+		SignalCost++;
 		
 		if(peerInCommunity && !meInCommunity) // peer is in local commun. of dest
 			return true;
@@ -194,15 +198,18 @@ public class DistributedBubbleRap
 		else if(peerInCommunity) // we're both in the local community of destination
 		{
 			// Forward to the one with the higher local centrality (in our community)
+			SignalCost = SignalCost + 8;
 			if(de.getLocalCentrality() > this.getLocalCentrality())
 				return true;
 			else
 				return false;
 		}
 		// Neither in local community, forward to more globally central node
-		else if(de.getGlobalCentrality() > this.getGlobalCentrality())
+		else if(de.getGlobalCentrality() > this.getGlobalCentrality()){
+			SignalCost = SignalCost + 8;
 			return true;
-		
+		}
+		SignalCost = SignalCost + 8;
 		return false;
 	}
 
@@ -265,6 +272,10 @@ public class DistributedBubbleRap
 	@Override
 	public Map<DTNHost, FBStatus> getFBfriends() {
 		return null;
+	}
+
+	public void resetSignalCost(){
+		SignalCost=0;
 	}
 	
 

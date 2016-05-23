@@ -7,8 +7,6 @@ package routing.community;
 
 import java.util.*;
 
-//import routing.communitydetection.DiBuBB.Duration;
-
 import core.*;
 
 /**
@@ -53,7 +51,7 @@ import core.*;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public class KCliqueCommunityDetection implements CommunityDetection
+public class KCliqueCommunityDetection implements CommunityDetection 
 {
 	public static final String K_SETTING = "K";
 	public static final String FAMILIAR_SETTING = "familiarThreshold";
@@ -64,6 +62,9 @@ public class KCliqueCommunityDetection implements CommunityDetection
 	
 	protected double k;
 	protected double familiarThreshold;
+	
+	public int newCost = 0;
+	
 	
 	public KCliqueCommunityDetection(Settings s)
 	{
@@ -80,16 +81,17 @@ public class KCliqueCommunityDetection implements CommunityDetection
 		this.familiarsOfMyCommunity = new HashMap<DTNHost, Set<DTNHost>>();
 	}
 	
-	public void newConnection(DTNHost myHost, DTNHost peer, 
+	public int newConnection(DTNHost myHost, DTNHost peer, 
 			CommunityDetection peerCD)
-	{
+	{	
 		KCliqueCommunityDetection scd = (KCliqueCommunityDetection)peerCD;
-		
+		int signalCost = 0;
 		// Ensure each node is in its own local community
 		// (This is the first instance where we actually get the host for these 
 		// objects)
 		this.localCommunity.add(myHost);
 		scd.localCommunity.add(peer);
+		
 		
 		/*
 		 * The first few steps of the protocol are
@@ -117,6 +119,7 @@ public class KCliqueCommunityDetection implements CommunityDetection
 			// compute the intersection size
 			int count=0;
 			for(DTNHost h : scd.familiarSet)
+				
 				if(this.localCommunity.contains(h))
 					count++;
 			
@@ -129,15 +132,17 @@ public class KCliqueCommunityDetection implements CommunityDetection
 				// search the peer's local community for other nodes with K in common
 				// (like a transitivity property)
 				for(DTNHost h : scd.localCommunity)
-				{
+				{ 
+					signalCost ++;
 					if(h == myHost || h == peer) continue;
 					
 					// compute intersection size
 					count = 0;
-					for(DTNHost i : scd.familiarsOfMyCommunity.get(h))
+					for(DTNHost i : scd.familiarsOfMyCommunity.get(h)){
+						signalCost ++;
 						if(this.localCommunity.contains(i))
 							count++;
-					
+					}
 					// add nodes if there are K in common with this local community
 					if(count >= this.k - 1)
 					{
@@ -146,16 +151,21 @@ public class KCliqueCommunityDetection implements CommunityDetection
 								scd.familiarsOfMyCommunity.get(h));
 					}
 				}
+				
 			}
+			
+			
 		}
 		
 		// Repeat process from peer's perspective
 		if(!scd.localCommunity.contains(myHost))
 		{
 			int count = 0;
-			for(DTNHost h : this.familiarSet)
+			for(DTNHost h : this.familiarSet){
+				signalCost ++;
 				if(scd.localCommunity.contains(h))
 					count++;
+			}
 			if(count >= scd.k - 1)
 			{
 				scd.localCommunity.add(myHost);
@@ -163,11 +173,14 @@ public class KCliqueCommunityDetection implements CommunityDetection
 				
 				for(DTNHost h : this.localCommunity)
 				{
+					signalCost ++;
 					if(h == myHost || h == peer) continue;
 					count = 0;
-					for(DTNHost i : this.familiarsOfMyCommunity.get(h))
+					for(DTNHost i : this.familiarsOfMyCommunity.get(h)){
+						signalCost ++;
 						if(scd.localCommunity.contains(i))
 							count++;
+					}
 					if(count >= scd.k - 1)
 					{
 						scd.localCommunity.add(h);
@@ -177,6 +190,7 @@ public class KCliqueCommunityDetection implements CommunityDetection
 				}
 			}
 		}
+		return signalCost*8;
 	}
 	
 	public void connectionLost(DTNHost myHost, DTNHost peer, 
@@ -190,7 +204,7 @@ public class KCliqueCommunityDetection implements CommunityDetection
 		while(i.hasNext())
 		{
 			Duration d = i.next();
-			time += d.end - d.start;
+			time += d.end - d.start;			
 		}
 		
 		// If cummulative duration is greater than threshold, add

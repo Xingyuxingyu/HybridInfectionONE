@@ -76,4 +76,12 @@ public class DeliveredMessagesReport extends Report implements MessageListener {
 	public void done() {
 		super.done();
 	}
+
+	@Override
+	public void messageTransferred(Message m, DTNHost from, DTNHost to,
+			boolean firstDelivery, int newCost) {
+	
+	}
+
+
 }

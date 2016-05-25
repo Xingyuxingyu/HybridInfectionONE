@@ -76,6 +76,11 @@ public class MessageGraphvizReport extends Report implements MessageListener {
 		super.done();
 	}
 
+	@Override
+	public void messageTransferred(Message m, DTNHost from, DTNHost to,
+			boolean firstDelivery, int newCost) {	
+	}
+
 	
 
 }

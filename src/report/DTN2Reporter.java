@@ -78,5 +78,10 @@ public class DTN2Reporter extends Report implements MessageListener {
 		}
 	}
 
+	@Override
+	public void messageTransferred(Message m, DTNHost from, DTNHost to,
+			boolean firstDelivery, int newCost) {	
+	}
+
 
 }

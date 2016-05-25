@@ -44,7 +44,7 @@ public class InfectedReport extends Report implements MessageListener {
 		
 	}
 
-	@Override
+	
 	public void messageTransferred(Message m, DTNHost from, DTNHost to,
 			boolean firstDelivery) {
 		// TODO Auto-generated method stub
@@ -68,6 +68,12 @@ public class InfectedReport extends Report implements MessageListener {
 	private void reportValues(int from, int to) {
 		//double prob = (1.0 * delivered) / created;
 		write(format(getSimTime()) + "	" + infected +"	"+from +"	"+ to);
+	}
+
+	@Override
+	public void messageTransferred(Message m, DTNHost from, DTNHost to,
+			boolean firstDelivery, int newCost) {
+		
 	}
 
 

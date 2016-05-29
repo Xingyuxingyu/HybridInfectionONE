@@ -98,7 +98,7 @@ public class MessageStatsReport extends Report implements MessageListener {
 		if (isWarmupID(m.getId())) {
 			return;
 		}
-		this.signalcost = this.signalcost + newCost/8;
+		this.signalcost = this.signalcost + newCost;/*COST(bytes)*/		
 		this.nrofRelayed++;
 		if (finalTarget) {
 			this.latencies.add(getSimTime() - 
@@ -164,6 +164,7 @@ public class MessageStatsReport extends Report implements MessageListener {
 				"\n" +format(deliveryProb) +
 				"\n" +format(deliveryCost) +
 				"\n" +getAverage(this.latencies) +
+				"\n" + this.signalcost/1000 +
 			"\nstarted: " + this.nrofStarted + 
 			"\nrelayed: " + this.nrofRelayed +
 			"\naborted: " + this.nrofAborted +
@@ -182,7 +183,7 @@ public class MessageStatsReport extends Report implements MessageListener {
 			"\nbuffertime_med: " + getMedian(this.msgBufferTime) +
 			"\nrtt_avg: " + getAverage(this.rtt) +
 			"\nrtt_med: " + getMedian(this.rtt) +
-			"\nSignalCost: " + this.signalcost
+			"\nSignalCost: " + this.signalcost/1000
 			;
 
 		

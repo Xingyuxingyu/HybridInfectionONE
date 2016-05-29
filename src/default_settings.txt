@@ -13,7 +13,7 @@ btInterface.transmitRange = 10
 
 ###################################
 Group.movementModel = RandomWaypoint
-Group.router = HybridStrategyRouter
+Group.router = DecisionEngineRouterFB
 Group.bufferSize = 50M
 Group.nrofInterfaces = 2
 Group.interface1 = btInterface
@@ -28,7 +28,7 @@ Events1.class = ExternalEventsQueue
 Events2.class = MessageEventGenerator
 ExternalEvents.nrofPreload = 500
 Events1.filePath = ee/sigcomm-1.txt
-Events2.interval = 3208
+Events2.interval = 320
 Events2.hosts = 0,75
 Events2.prefix = Y
 Events2.size = 1k

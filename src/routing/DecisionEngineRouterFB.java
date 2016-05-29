@@ -1,27 +1,92 @@
 package routing;
 
+
+
 import input.Friend;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import routing.community.DistributedBubbleRap;
 import routing.community.DistributedBubbleRapFB;
-import core.Application;
-import core.Connection;
-import core.DTNHost;
-import core.Message;
-import core.MessageListener;
-import core.Settings;
-import core.SimClock;
-import core.SimError;
-import core.Tuple;
+import routing.community.DistributedHybridLog;
+import core.*;
 
+/**
+ * This class overrides ActiveRouter in order to inject calls to a 
+ * DecisionEngine object where needed add extract as much code from the update()
+ * method as possible. 
+ * 
+ * <strong>Forwarding Logic:</strong> 
+ * 
+ * A DecisionEngineRouterFB maintains a List of Tuple<Message, Connection> in 
+ * support of a call to ActiveRouter.tryMessagesForConnected() in 
+ * DecisionEngineRouterFB.update(). Since update() is called so frequently, we'd 
+ * like as little computation done in it as possible; hence the List that gets
+ * updated when events happen. Four events cause the List to be updated: a new 
+ * message from this host, a new received message, a connection goes up, or a 
+ * connection goes down. On a new message (either from this host or received 
+ * from a peer), the collection of open connections is examined to see if the
+ * message should be forwarded along them. If so, a new Tuple is added to the
+ * List. When a connection goes up, the collection of messages is examined to 
+ * determine to determine if any should be sent to this new peer, adding a Tuple
+ * to the list if so. When a connection goes down, any Tuple in the list
+ * associated with that connection is removed from the List.
+ * 
+ * <strong>Decision Engines</strong>
+ * 
+ * Most (if not all) routing decision making is provided by a 
+ * RoutingDecisionEngine object. The DecisionEngine Interface defines methods 
+ * that enact computation and return decisions as follows:
+ * 
+ * <ul>
+ *   <li>In createNewMessage(), a call to RoutingDecisionEngine.newMessage() is 
+ * 	 made. A return value of true indicates that the message should be added to
+ * 	 the message store for routing. A false value indicates the message should
+ *   be discarded.
+ *   </li>
+ *   <li>changedConnection() indicates either a connection went up or down. The
+ *   appropriate connectionUp() or connectionDown() method is called on the
+ *   RoutingDecisionEngine object. Also, on connection up events, this first
+ *   peer to call changedConnection() will also call
+ *   RoutingDecisionEngine.doExchangeForNewConnection() so that the two 
+ *   decision engine objects can simultaneously exchange information and update 
+ *   their routing tables (without fear of this method being called a second
+ *   time).
+ *   </li>
+ *   <li>Starting a Message transfer, a protocol first asks the neighboring peer
+ *   if it's okay to send the Message. If the peer indicates that the Message is
+ *   OLD or DELIVERED, call to RoutingDecisionEngine.shouldDeleteOldMessage() is
+ *   made to determine if the Message should be removed from the message store.
+ *   <em>Note: if tombstones are enabled or deleteDelivered is disabled, the 
+ *   Message will be deleted and no call to this method will be made.</em>
+ *   </li>
+ *   <li>When a message is received (in messageTransferred), a call to 
+ *   RoutingDecisionEngine.isFinalDest() to determine if the receiving (this) 
+ *   host is an intended recipient of the Message. Next, a call to 
+ *   RoutingDecisionEngine.shouldSaveReceivedMessage() is made to determine if
+ *   the new message should be stored and attempts to forward it on should be
+ *   made. If so, the set of Connections is examined for transfer opportunities
+ *   as described above.
+ *   </li>
+ *   <li> When a message is sent (in transferDone()), a call to 
+ *   RoutingDecisionEngine.shouldDeleteSentMessage() is made to ask if the 
+ *   departed Message now residing on a peer should be removed from the message
+ *   store.
+ *   </li>
+ * </ul>
+ * 
+ * <strong>Tombstones</strong>
+ * 
+ * The ONE has the the deleteDelivered option that lets a host delete a message
+ * if it comes in contact with the message's destination. More aggressive 
+ * approach lets a host remember that a given message was already delivered by
+ * storing the message ID in a list of delivered messages (which is called the
+ * tombstone list here). Whenever any node tries to send a message to a host 
+ * that has a tombstone for the message, the sending node receives the 
+ * tombstone.
+ * 
+ * @author PJ Dillon, University of Pittsburgh
+ */
 public class DecisionEngineRouterFB extends ActiveRouter
 {
 	public static final String PUBSUB_NS = "DecisionEngineRouterFB";
@@ -43,7 +108,6 @@ public class DecisionEngineRouterFB extends ActiveRouter
 	public int SignalCost = 0;
 
 
-
 	/** 
 	 * Used to save state machine when new connections are made. See comment in
 	 * changedConnection() 
@@ -55,7 +119,6 @@ public class DecisionEngineRouterFB extends ActiveRouter
 		super(s);
 		
 		Settings routeSettings = new Settings(PUBSUB_NS);
-		
 		
 		//outgoingMessages = new LinkedList<Tuple<Message, Connection>>();
 		
@@ -105,7 +168,6 @@ public class DecisionEngineRouterFB extends ActiveRouter
               m.setTtl(this.msgTtl);
    			  /*SprayAndWait Begin*/
    			  m.addProperty(MSG_COUNT_PROPERTY, new Integer(initialNrofCopies));
-   			  m.addProperty("meet", 0);
    			  /*SprayAndWait End*/
               addToMessages(m, true); 
               
@@ -195,12 +257,11 @@ public class DecisionEngineRouterFB extends ActiveRouter
 	protected void doExchange(Connection con, DTNHost otherHost)
 	{
 		conStates.put(con, 1);
-		int newCost = decider.doExchangeForNewConnection(con, otherHost);
-		SignalCost = newCost + SignalCost;
+		decider.doExchangeForNewConnection(con, otherHost);
 	}
 	
 	/**
-	 * Called by a peer HybridStrategyRouter to indicated that it already 
+	 * Called by a peer DecisionEngineRouterFB to indicated that it already 
 	 * performed an information exchange for the given connection.
 	 * 
 	 * @param con Connection on which the exchange was performed
@@ -279,12 +340,10 @@ public class DecisionEngineRouterFB extends ActiveRouter
 			// Determine any other connections to which to forward a message
 		}
 		
-	
 		if (isFirstDelivery)
 		{
-			this.deliveredMessages.put(id, aMessage);			
+			this.deliveredMessages.put(id, aMessage);
 		}
-		
 		/*SprayAndWait  Begin*/
 		Integer nrofCopies = (Integer)aMessage.getProperty(MSG_COUNT_PROPERTY);
 		if (nrofCopies <= 1)
@@ -293,11 +352,10 @@ public class DecisionEngineRouterFB extends ActiveRouter
 			nrofCopies = (int) Math.ceil(nrofCopies / 2.0);
 		aMessage.updateProperty(MSG_COUNT_PROPERTY, nrofCopies);
 		/*SprayAndWait  End*/
-		
 		SignalCost = ((DistributedBubbleRapFB)decider).SignalCost + SignalCost;
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, getHost(),
-					isFirstDelivery, SignalCost);
+					isFirstDelivery,SignalCost);
 			SignalCost = 0;
 			((DistributedBubbleRapFB)decider).resetSignalCost();
 		}
@@ -354,7 +412,6 @@ public class DecisionEngineRouterFB extends ActiveRouter
  @Override
  public void update(){
       super.update();
-      /*new for read FBList*/
       if(readflag==0){
     	  decider.FBread(getHost());
     	  readflag = 1 ;
@@ -393,15 +450,28 @@ public class DecisionEngineRouterFB extends ActiveRouter
 	private Tuple<Message, Connection> tryOtherMessages() {
 		ShouldSendMessages = new ArrayList<Tuple<Message, Connection>>(); 
 		Collection<Message> msgCollection = getMessageCollection();
-		
+
 
 		for (Message m : msgCollection) {
-			List<DTNHost> remember = new ArrayList<DTNHost>();
-			remember.add(getHost());
 			
-			int meet = (Integer) m.getProperty("meet");
+
 			
-			/*檢查DTN的人要不要傳*/
+			/*先檢查FB有沒有目的地*/
+			
+			for (Connection con : getFriendsCon()) {
+				DTNHost other = con.getOtherNode(getHost());
+				DecisionEngineRouterFB otherRouter = (DecisionEngineRouterFB)other.getRouter();
+				DecisionEngineRouterFB myRouter = (DecisionEngineRouterFB)getHost().getRouter();
+				if (otherRouter.isTransferring())
+					continue; // skip host which is transferring
+				if (otherRouter.hasMessage(m.getId())) 
+					continue; // skip message if the peer already have
+				if(otherRouter != myRouter && decider.shouldSendMessageToFBHost(m, other)){					
+					ShouldSendMessages.add(new Tuple<Message, Connection>(m,con));
+				}	
+			}
+			
+			/*再檢查DTN的人要不要傳*/
 
 			for (Connection con : getConn()) {
 				DTNHost other = con.getOtherNode(getHost());
@@ -412,34 +482,12 @@ public class DecisionEngineRouterFB extends ActiveRouter
 				if (otherRouter.hasMessage(m.getId())) 
 					continue; // skip message if the peer already have
 				if(otherRouter != myRouter && decider.shouldSendMessageToHost(m, other)){
-					/*如果DTN有同樣的人傳 就不再傳*/
-					remember.add(other);
 					ShouldSendMessages.add(new Tuple<Message, Connection>(m,con));
-					m.updateProperty("meet", meet);				
-				}
-			}
-			
-			/*檢查FB有沒有目的地*/
-			
-			
-			for (Connection con : getFriendsCon()) {
-				DTNHost other = con.getOtherNode(getHost());
-				DecisionEngineRouterFB otherRouter = (DecisionEngineRouterFB)other.getRouter();
-				DecisionEngineRouterFB myRouter = (DecisionEngineRouterFB)getHost().getRouter();
-				if (otherRouter.isTransferring())
-					continue; // skip host which is transferring
-				if (otherRouter.hasMessage(m.getId())) 
-					continue; // skip message if the peer already have
-				if(otherRouter != myRouter && decider.shouldSendMessageToFBHost(m, other)){	
-					//m.addnrofFBtrans(1);
-					if(!remember.contains(other)){
-					con.changeFBedge(true);
-					ShouldSendMessages.add(new Tuple<Message, Connection>(m,con));
-					m.updateProperty("meet", meet);	
-					}
 				}	
 			}
 			
+			
+
 		}
 		if (ShouldSendMessages.size() == 0) {
 			return null;
@@ -448,16 +496,14 @@ public class DecisionEngineRouterFB extends ActiveRouter
 		for(Iterator<Tuple<Message, Connection>> i = ShouldSendMessages.iterator(); 
 				i.hasNext();){		
 				Tuple<Message, Connection> t = i.next();
-				Integer nrofCopies = (Integer)t.getKey().getProperty(MSG_COUNT_PROPERTY);				
-				if(nrofCopies <= 0){						
-					i.remove();						
+				Integer nrofCopies = (Integer)t.getKey().getProperty(MSG_COUNT_PROPERTY);
+				if(nrofCopies <= 0){	
+					i.remove();	
 				}
-				
 		}
 		/*SprayAndWait  End*/ 
 		
 		return tryMessagesForConnected(ShouldSendMessages);	// try to send messages
-		
 	}
 	
 	/*the part of BubbleRapMixDraft end*/
@@ -499,9 +545,5 @@ public class DecisionEngineRouterFB extends ActiveRouter
 		return getHost().getInterfaces().get(1).getConnections();
 	}
 	
-	public void addSignalCost(int newCost){
-		SignalCost = SignalCost + newCost;
-	}
 
 }
-

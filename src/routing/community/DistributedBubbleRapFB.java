@@ -1,23 +1,67 @@
+/*
+ * @(#)DistributedBubbleRapFB.java
+ *
+ * Copyright 2010 by University of Pittsburgh, released under GPLv3.
+ * 
+ */
 package routing.community;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+
+import java.util.*;
+
+import core.*;
 import routing.DecisionEngineRouterFB;
-import routing.HybridStrategyRouter;
 import routing.MessageRouter;
 import routing.RoutingDecisionEngine;
-import core.Connection;
-import core.DTNHost;
-import core.Message;
-import core.Settings;
-import core.SimClock;
 
-public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityDetectionEngine
+
+
+
+/**
+ * <p>Implements the Distributed BubbleRap Routing Algorithm from Hui et al. 
+ * 2008 (Bibtex record included for convenience). The paper is a bit fuzzy on 
+ * thevactual implementation details. Choices exist for methods of community
+ * detection (SIMPLE, K-CLIQUE, MODULARITY) and local centrality approximation
+ * (DEGREE, S-WINDOW, C-WINDOW).</p> 
+ * 
+ * <p>In general, each node maintains an idea of it's local community, a group 
+ * of nodes it meets with frequently. It also approximates its centrality within
+ * the social network defined by this local community and within the global
+ * social network defined by all nodes.</p>
+ * 
+ * <p>When a node has a message for a destination, D, and D is not part of its 
+ * local community, it forwards the message to "more globally central" nodes,
+ * those that estimate a higher global centrality value. The intuition here is 
+ * that nodes in the center of the social network are more likely to contact the
+ * destination. In this fashion the message bubbles up social network to more
+ * central nodes until a node is found that reports D in its local community.
+ * At this point, the message is only routed with in the nodes of the local 
+ * community and propagated towards more locally central nodes or the 
+ * destination until delivered.<p>
+ * 
+ * <pre>
+ * \@inproceedings{1374652,
+ *	Address = {New York, NY, USA},
+ *	Author = {Hui, Pan and Crowcroft, Jon and Yoneki, Eiko},
+ *	Booktitle = {MobiHoc '08: Proceedings of the 9th ACM international symposium 
+ *		on Mobile ad hoc networking and computing},
+ *	Doi = {http://doi.acm.org/10.1145/1374618.1374652},
+ *	Isbn = {978-1-60558-073-9},
+ *	Location = {Hong Kong, Hong Kong, China},
+ *	Pages = {241--250},
+ *	Publisher = {ACM},
+ *	Title = {BUBBLE Rap: Social-based Forwarding in Delay Tolerant Networks},
+ *	Url = {http://portal.acm.org/ft_gateway.cfm?id=1374652&type=pdf&coll=GUIDE&dl=GUIDE&CFID=55195392&CFTOKEN=93998863},
+ *	Year = {2008}
+ * }
+ * </pre>
+ * 
+ * @author PJ Dillon, University of Pittsburgh
+ *
+ */
+public class DistributedBubbleRapFB 
+				implements RoutingDecisionEngine, CommunityDetectionEngine
 {
 	/** Community Detection Algorithm to employ -setting id {@value} */
 	public static final String COMMUNITY_ALG_SETTING = "communityDetectAlg";
@@ -29,8 +73,6 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 	
 	/*new*/
 	protected Map<DTNHost, FBStatus> FBfriends;
-	protected List<DTNHost> onlymeetme;
-	protected int thres_inactive = 2;
 	/*new*/
 	
 	
@@ -38,8 +80,9 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 	protected Centrality centrality;
 	
 	public int SignalCost = 0;
+	
 	/**
-	 * Constructs a DistributedHybridLog Decision Engine based upon the settings
+	 * Constructs a DistributedBubbleRapFB Decision Engine based upon the settings
 	 * defined in the Settings object parameter. The class looks for the class
 	 * names of the community detection and centrality algorithms that should be
 	 * employed used to perform the routing.
@@ -62,10 +105,10 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 	}
 	
 	/**
-	 * Constructs a DistributedHybridLog Decision Engine from the argument 
+	 * Constructs a DistributedBubbleRapFB Decision Engine from the argument 
 	 * prototype. 
 	 * 
-	 * @param proto Prototype DistributedHybridLog upon which to base this object
+	 * @param proto Prototype DistributedBubbleRapFB upon which to base this object
 	 */
 	public DistributedBubbleRapFB(DistributedBubbleRapFB proto)
 	{
@@ -74,8 +117,7 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 		startTimestamps = new HashMap<DTNHost, Double>();
 		connHistory = new HashMap<DTNHost, List<Duration>>();
 		/*new*/
-		FBfriends = new HashMap<DTNHost, FBStatus>();
-		onlymeetme = new ArrayList<DTNHost>();
+		FBfriends = new HashMap<DTNHost, FBStatus>();	
 		
 		
 	}
@@ -86,9 +128,8 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 			for(Connection con : thisHost.getInterfaces().get(0).getConnections()){
 				FBStatus fri = new FBStatus();
 				//FBdegree
-				fri.FBdegree = con.getOtherNode(thisHost).getInterfaces().get(0).getConnections().size();
-				//System.out.println(thisHost.getAddress()+"	"+con.getOtherNode(thisHost).getAddress());
-				FBfriends.put(con.getOtherNode(thisHost),fri);
+				fri.FBdegree = con.getTo().getInterfaces().get(0).getConnections().size();
+				FBfriends.put(con.getTo(),fri);
 			}				
 		/*readFBList*/
 	}
@@ -96,24 +137,16 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 	public void connectionUp(DTNHost thisHost, DTNHost peer)
 	{	
 		
-		int threshold = SimClock.getIntTime()/10000*thres_inactive;
-		/*new*/
+		/*if(FBfriends.isEmpty()){
+			FBread(thisHost);
+		}*/
+		/*nrofcontact+1*/
+		SignalCost++;
 		if(FBfriends.containsKey(peer)){
 			//FB number of contact
 			FBfriends.get(peer).Nrofcontact = FBfriends.get(peer).Nrofcontact+1;
 		}
-		if(!this.onlymeetme.contains(peer)){
-			if(getOtherDecisionEngine(peer).FBfriends.isEmpty()){		
-				this.onlymeetme.add(peer);
-			}
-			else if(getOtherDecisionEngine(peer).connHistory.size()<=threshold){
-				this.onlymeetme.add(peer);
-			}
-		}
-		else if(getOtherDecisionEngine(peer).connHistory.size()>threshold){
-			this.onlymeetme.remove(peer);
-		}
-		/*new*/
+		/*nrofcontact+1*/
 		
 	
 	}
@@ -181,20 +214,15 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 	/*  for FBfriends */
 	public boolean shouldSendMessageToFBHost(Message m, DTNHost otherHost)
 	{	
-		if(m.getTo() == otherHost) {
-			m.updateProperty("meet", 3);
-			return true;//FB朋友就是dest.
-		}
-		
+		if(m.getTo() == otherHost) return true;//FB朋友就是dest.
 		
 		DTNHost dest = m.getTo();
 		DistributedBubbleRapFB de = getOtherDecisionEngine(otherHost);//取FB的decider看他的朋友
 		
-		
-			
 		/*如果這個FB朋友的FBlist有dest 傳*/
-		SignalCost = SignalCost + de.FBfriends.size()*8;
-		if(de.FBfriends.containsKey(dest)){			
+		SignalCost++;
+		if(de.FBfriends.containsKey(dest)){
+			//FBfriends.get(otherHost).nroftrans = FBfriends.get(otherHost).nroftrans + 1;
 			return true;
 		}
 
@@ -203,25 +231,17 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 		SignalCost++;
 		/*如果這個FB朋友在dest的群內而我不在 傳*/
 		if(peerInCommunity && !meInCommunity){ // peer is in local commun. of dest
+			//FBfriends.get(otherHost).nroftrans = FBfriends.get(otherHost).nroftrans + 1;
 			return true;
 		}
-		
-		/*if(de.onlymeetme.contains(m.getTo())){
-			m.updateProperty("meet", 2);
-			return true;
-		}*/
 		
 		return false;
 		
 	}
 	
 	public boolean shouldSendMessageToHost(Message m, DTNHost otherHost)
-	{	
-		
-		if(m.getTo() == otherHost){
-			m.updateProperty("meet", 3);
-			return true; // trivial to deliver to final dest
-		}
+	{
+		if(m.getTo() == otherHost) return true; // trivial to deliver to final dest
 		
 		/*
 		 * Here is where we decide when to forward along a message. 
@@ -234,44 +254,29 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 		DTNHost dest = m.getTo();
 		DistributedBubbleRapFB de = getOtherDecisionEngine(otherHost);
 		
-		
-				
 		// Which of us has the dest in our local communities, this host or the peer
-		boolean peerInCommunity = de.commumesWithHost(dest);	
+		boolean peerInCommunity = de.commumesWithHost(dest);
 		boolean meInCommunity = this.commumesWithHost(dest);
 		SignalCost++;
 		
 		if(peerInCommunity && !meInCommunity) // peer is in local commun. of dest
 			return true;
-		
-		/*new*/
-			/*如果這個朋友的FBlist有dest 傳*/
-		else if(de.FBfriends.containsKey(dest))	{
-			SignalCost = SignalCost + de.FBfriends.size()*8;
-			return true;}	
-		/*new*/
-		else if(!peerInCommunity && meInCommunity) // I'm in local commun. of dest	
+		else if(!peerInCommunity && meInCommunity) // I'm in local commun. of dest
 			return false;
 		else if(peerInCommunity) // we're both in the local community of destination
 		{
 			// Forward to the one with the higher local centrality (in our community)
-			SignalCost = SignalCost + 8;
+			SignalCost++;
 			if(de.getLocalCentrality() > this.getLocalCentrality())
 				return true;
 			else
 				return false;
 		}
 		// Neither in local community, forward to more globally central node
-		else if(de.getGlobalCentrality() > this.getGlobalCentrality()){
-			SignalCost = SignalCost + 8;
+		SignalCost++;
+		if(de.getGlobalCentrality() > this.getGlobalCentrality())
 			return true;
-		}
 		
-		/*if(de.onlymeetme.contains(m.getTo())){
-			m.updateProperty("meet", 2);
-			return true;
-		}*/
-		SignalCost = SignalCost + 8;
 		return false;
 	}
 
@@ -314,7 +319,7 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 	private DistributedBubbleRapFB getOtherDecisionEngine(DTNHost h)
 	{
 		MessageRouter otherRouter = h.getRouter();
-		assert otherRouter instanceof HybridStrategyRouter : "This router only works " + 
+		assert otherRouter instanceof DecisionEngineRouterFB : "This router only works " + 
 		" with other routers of same type";
 		
 		return (DistributedBubbleRapFB) ((DecisionEngineRouterFB)otherRouter).getDecisionEngine();
@@ -326,11 +331,8 @@ public class DistributedBubbleRapFB implements RoutingDecisionEngine, CommunityD
 	public Map<DTNHost, FBStatus> getFBfriends(){
 		return this.FBfriends;
 	}
-
+	
 	public void resetSignalCost(){
 		SignalCost=0;
 	}
 }
-
-
-

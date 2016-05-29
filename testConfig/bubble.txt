@@ -19,7 +19,7 @@ HybridStrategyRouter.familiarThreshold = [1000]
 
 # Use TTL of 1, 6 and 12 hours (TTL value is given in minutes)
 
-Group.msgTtl =  [30240;20160;10080;5760;2880;1440;360;180;60;10;2]
+Group.msgTtl =  [1440;30240;20160;10080;5760;2880;1440;360;180;60;10;2]
 
 # MessageStatsReport is enabled by default_settings.txt but 
 # let's override the report directory path setting

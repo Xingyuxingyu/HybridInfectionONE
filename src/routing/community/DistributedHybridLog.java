@@ -142,20 +142,28 @@ public class DistributedHybridLog
 		
 		int threshold = SimClock.getIntTime()/10000*thres_inactive;
 		/*new*/
+		SignalCost++;
 		if(FBfriends.containsKey(peer)){
-			//FB number of contact
-			SignalCost++;
+			//FB number of contact			
 			FBfriends.get(peer).Nrofcontact = FBfriends.get(peer).Nrofcontact+1;
 		}
+		
 		if(!this.onlymeetme.contains(peer)){
-			if(getOtherDecisionEngine(peer).FBfriends.isEmpty()){		
+			int a=0;
+			SignalCost++;
+			if(getOtherDecisionEngine(peer).FBfriends.isEmpty()){	
+				SignalCost++;
+				this.onlymeetme.add(peer);
+				a=1;
+			}
+			else if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)<=thres_inactive){
+				SignalCost++;
 				this.onlymeetme.add(peer);
 			}
-			else if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)<=threshold){
-				this.onlymeetme.add(peer);
-			}
+			if(a == 0)
+				SignalCost++;
 		}
-		else if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)>threshold){
+		else if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)>thres_inactive){
 			SignalCost++;
 			if(!getOtherDecisionEngine(peer).FBfriends.isEmpty())
 			this.onlymeetme.remove(peer);
@@ -247,7 +255,7 @@ public class DistributedHybridLog
 		
 			
 		/*如果這個FB朋友的FBlist有dest 傳*/
-		SignalCost = SignalCost + de.FBfriends.size()*8;
+		SignalCost++;
 		if(de.FBfriends.containsKey(dest)){	
 			return true;
 		}
@@ -260,7 +268,7 @@ public class DistributedHybridLog
 			return true;
 		}
 		
-		SignalCost = SignalCost + de.onlymeetme.size()*8;
+		SignalCost++;
 		if(de.onlymeetme.contains(m.getTo())){
 			m.updateProperty("meet", 2);
 			return true;
@@ -300,9 +308,8 @@ public class DistributedHybridLog
 		
 		/*new*/
 			/*如果這個朋友的FBlist有dest 傳*/
-		
-		else if(de.FBfriends.containsKey(dest)){
-			SignalCost = SignalCost + de.FBfriends.size()*8;
+		SignalCost++;
+		if(de.FBfriends.containsKey(dest)){			
 			return true;
 		}	
 		
@@ -312,24 +319,22 @@ public class DistributedHybridLog
 		else if(peerInCommunity) // we're both in the local community of destination
 		{
 			// Forward to the one with the higher local centrality (in our community)
-			SignalCost = SignalCost + 8;
+			SignalCost++;
 			if(de.getLocalCentrality() > this.getLocalCentrality())
 				return true;
 			/*else
 				return false;*/
 		}
 		// Neither in local community, forward to more globally central node
-		else if(de.getGlobalCentrality() > this.getGlobalCentrality()){
-			SignalCost = SignalCost + 8;
+		SignalCost++;
+		if(de.getGlobalCentrality() > this.getGlobalCentrality()){
 			return true;
 		}
-		SignalCost = SignalCost + 8;
+		SignalCost++;
 		if(de.onlymeetme.contains(m.getTo())){
-			SignalCost = SignalCost + de.onlymeetme.size()*8;
 			m.updateProperty("meet", 2);
 			return true;
 		}
-		SignalCost = SignalCost + de.onlymeetme.size()*8;
 		
 		return false;
 	}

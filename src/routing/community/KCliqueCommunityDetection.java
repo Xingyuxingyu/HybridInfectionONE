@@ -190,7 +190,7 @@ public class KCliqueCommunityDetection implements CommunityDetection
 				}
 			}
 		}
-		return signalCost*8;
+		return signalCost;
 	}
 	
 	public void connectionLost(DTNHost myHost, DTNHost peer, 

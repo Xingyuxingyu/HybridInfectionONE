@@ -198,7 +198,7 @@ public class DistributedBubbleRap
 		else if(peerInCommunity) // we're both in the local community of destination
 		{
 			// Forward to the one with the higher local centrality (in our community)
-			SignalCost = SignalCost + 8;
+			SignalCost++;
 			if(de.getLocalCentrality() > this.getLocalCentrality())
 				return true;
 			else
@@ -206,10 +206,10 @@ public class DistributedBubbleRap
 		}
 		// Neither in local community, forward to more globally central node
 		else if(de.getGlobalCentrality() > this.getGlobalCentrality()){
-			SignalCost = SignalCost + 8;
+			SignalCost++;
 			return true;
 		}
-		SignalCost = SignalCost + 8;
+		SignalCost++;
 		return false;
 	}
 

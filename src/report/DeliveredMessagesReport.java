@@ -49,7 +49,7 @@ public class DeliveredMessagesReport extends Report implements MessageListener {
 	}
 	
 	public void messageTransferred(Message m, DTNHost from, DTNHost to, 
-			boolean firstDelivery) {
+			boolean firstDelivery,int newcost) {
 		if (!isWarmupID(m.getId()) && firstDelivery) {
 			int ttl = m.getTtl();
 			write(format(getSimTime()) + " " + m.getId() + " " + 
@@ -77,11 +77,7 @@ public class DeliveredMessagesReport extends Report implements MessageListener {
 		super.done();
 	}
 
-	@Override
-	public void messageTransferred(Message m, DTNHost from, DTNHost to,
-			boolean firstDelivery, int newCost) {
 	
-	}
 
 
 }

@@ -71,6 +71,7 @@ public class DistributedBubbleRap
 	protected Centrality centrality;
 	
 	public int SignalCost = 0;
+	public int exchangeTime1 = 0;
 	/**
 	 * Constructs a DistributedBubbleRap Decision Engine based upon the settings
 	 * defined in the Settings object parameter. The class looks for the class
@@ -173,6 +174,7 @@ public class DistributedBubbleRap
 
 	public boolean shouldSendMessageToHost(Message m, DTNHost otherHost)
 	{
+		exchangeTime1++;
 		if(m.getTo() == otherHost) return true; // trivial to deliver to final dest
 		
 		/*
@@ -276,6 +278,7 @@ public class DistributedBubbleRap
 
 	public void resetSignalCost(){
 		SignalCost=0;
+		exchangeTime1=0;
 	}
 	
 

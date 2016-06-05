@@ -135,7 +135,7 @@ public class DistanceDelayReport extends Report implements MessageListener {
 
 	@Override
 	public void messageTransferred(Message m, DTNHost from, DTNHost to,
-			boolean firstDelivery, int newCost) {
+			boolean firstDelivery, int newCost, int exTime) {
 		
 	}
 

@@ -52,6 +52,6 @@ public interface MessageListener {
 	 * and received this message for the first time.
 	 */
 	public void messageTransferred(Message m, DTNHost from, DTNHost to,
-			boolean firstDelivery,int newCost);
+			boolean firstDelivery,int newCost,int exTime);
 	
 }

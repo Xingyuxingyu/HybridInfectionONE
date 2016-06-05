@@ -3,6 +3,7 @@ package routing;
 import java.util.*;
 
 import routing.community.DistributedBubbleRap;
+import routing.community.DistributedBubbleRapFB;
 import routing.community.DistributedHybridLog;
 import core.*;
 
@@ -96,6 +97,7 @@ public class DecisionEngineRouter extends ActiveRouter
 	protected Set<String> tombstones;
 	
 	public int SignalCost = 0;
+	public int exchangeTime = 0;
 	
 	/** 
 	 * Used to save state machine when new connections are made. See comment in
@@ -229,6 +231,7 @@ public class DecisionEngineRouter extends ActiveRouter
 		conStates.put(con, 1);
 		int newCost = decider.doExchangeForNewConnection(con, otherHost);
 		SignalCost = newCost + SignalCost;
+		exchangeTime++;
 	}
 	
 	/**
@@ -320,10 +323,12 @@ public class DecisionEngineRouter extends ActiveRouter
 		}
 		
 		SignalCost = ((DistributedBubbleRap)decider).SignalCost + SignalCost;
+		exchangeTime = ((DistributedBubbleRap)decider).exchangeTime1 + exchangeTime;
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, getHost(),
-					isFirstDelivery, SignalCost);
+					isFirstDelivery, SignalCost, exchangeTime);
 			SignalCost = 0;
+			exchangeTime = 0;
 			((DistributedBubbleRap)decider).resetSignalCost();
 		}
 		

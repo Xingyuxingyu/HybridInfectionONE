@@ -49,7 +49,7 @@ public class DeliveredMessagesReport extends Report implements MessageListener {
 	}
 	
 	public void messageTransferred(Message m, DTNHost from, DTNHost to, 
-			boolean firstDelivery,int newcost) {
+			boolean firstDelivery,int newcost, int exTime) {
 		if (!isWarmupID(m.getId()) && firstDelivery) {
 			int ttl = m.getTtl();
 			write(format(getSimTime()) + " " + m.getId() + " " + 

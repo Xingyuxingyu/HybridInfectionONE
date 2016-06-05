@@ -80,6 +80,7 @@ public class DistributedHybridLog
 	protected Centrality centrality;
 	
 	public int SignalCost = 0;
+	public int exchangeTime1 = 0;
 	
 	
 	/**
@@ -140,32 +141,34 @@ public class DistributedHybridLog
 	public void connectionUp(DTNHost thisHost, DTNHost peer)
 	{	
 		
-		int threshold = SimClock.getIntTime()/10000*thres_inactive;
+		//int threshold = SimClock.getIntTime()/10000*thres_inactive;
 		/*new*/
 		SignalCost++;
 		if(FBfriends.containsKey(peer)){
 			//FB number of contact			
 			FBfriends.get(peer).Nrofcontact = FBfriends.get(peer).Nrofcontact+1;
 		}
+		SignalCost++;
+		
+		int fbnum = getOtherDecisionEngine(peer).FBfriends.size();
+		SignalCost++;
 		
 		if(!this.onlymeetme.contains(peer)){
-			int a=0;
-			SignalCost++;
-			if(getOtherDecisionEngine(peer).FBfriends.isEmpty()){	
+			
+			/*if(getOtherDecisionEngine(peer).FBfriends.isEmpty()){	
 				SignalCost++;
 				this.onlymeetme.add(peer);
 				a=1;
-			}
-			else if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)<=thres_inactive){
+			}*/
+			SignalCost++;
+			if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)+fbnum<=thres_inactive){
 				SignalCost++;
 				this.onlymeetme.add(peer);
 			}
-			if(a == 0)
-				SignalCost++;
+			
 		}
-		else if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)>thres_inactive){
+		else if(getNodeInTime(getOtherDecisionEngine(peer).connHistory)+fbnum>thres_inactive){
 			SignalCost++;
-			if(!getOtherDecisionEngine(peer).FBfriends.isEmpty())
 			this.onlymeetme.remove(peer);
 		}
 		else{
@@ -243,6 +246,7 @@ public class DistributedHybridLog
 	/*  for FBfriends */
 	public boolean shouldSendMessageToFBHost(Message m, DTNHost otherHost)
 	{	
+		exchangeTime1++;
 		if(m.getTo() == otherHost) {
 			m.updateProperty("meet", 3);
 			return true;//FBªB¤Í´N¬Odest.
@@ -280,7 +284,7 @@ public class DistributedHybridLog
 	
 	public boolean shouldSendMessageToHost(Message m, DTNHost otherHost)
 	{
-		
+		exchangeTime1++;
 		if(m.getTo() == otherHost){
 			m.updateProperty("meet", 3);
 			return true; // trivial to deliver to final dest
@@ -448,5 +452,6 @@ public class DistributedHybridLog
 	
 	public void resetSignalCost(){
 		SignalCost=0;
+		exchangeTime1=0;
 	}
 }

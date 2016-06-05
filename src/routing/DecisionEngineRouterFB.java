@@ -106,6 +106,7 @@ public class DecisionEngineRouterFB extends ActiveRouter
 	private List<Tuple<Message, Connection>> ShouldSendMessages;
 	public int readflag = 0;
 	public int SignalCost = 0;
+	public int exchangeTime = 0;
 
 
 	/** 
@@ -257,7 +258,9 @@ public class DecisionEngineRouterFB extends ActiveRouter
 	protected void doExchange(Connection con, DTNHost otherHost)
 	{
 		conStates.put(con, 1);
-		decider.doExchangeForNewConnection(con, otherHost);
+		int newCost = decider.doExchangeForNewConnection(con, otherHost);
+		SignalCost = newCost + SignalCost;
+		exchangeTime++;
 	}
 	
 	/**
@@ -353,10 +356,12 @@ public class DecisionEngineRouterFB extends ActiveRouter
 		aMessage.updateProperty(MSG_COUNT_PROPERTY, nrofCopies);
 		/*SprayAndWait  End*/
 		SignalCost = ((DistributedBubbleRapFB)decider).SignalCost + SignalCost;
+		exchangeTime = ((DistributedBubbleRapFB)decider).exchangeTime1 + exchangeTime;
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, getHost(),
-					isFirstDelivery,SignalCost);
+					isFirstDelivery, SignalCost, exchangeTime);
 			SignalCost = 0;
+			exchangeTime = 0;
 			((DistributedBubbleRapFB)decider).resetSignalCost();
 		}
 		

@@ -89,6 +89,7 @@ public class KCliqueCommunityDetection implements CommunityDetection
 		// Ensure each node is in its own local community
 		// (This is the first instance where we actually get the host for these 
 		// objects)
+		signalCost++;
 		this.localCommunity.add(myHost);
 		scd.localCommunity.add(peer);
 		
@@ -118,10 +119,11 @@ public class KCliqueCommunityDetection implements CommunityDetection
 			
 			// compute the intersection size
 			int count=0;
-			for(DTNHost h : scd.familiarSet)
-				
+			for(DTNHost h : scd.familiarSet){
+				signalCost++;
 				if(this.localCommunity.contains(h))
 					count++;
+			}
 			
 			// if peer familiar has K nodes in common with this host's local community
 			if(count >= this.k - 1)

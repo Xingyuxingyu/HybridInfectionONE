@@ -80,6 +80,7 @@ public class DistributedBubbleRapFB
 	protected Centrality centrality;
 	
 	public int SignalCost = 0;
+	public int exchangeTime1 = 0;
 	
 	/**
 	 * Constructs a DistributedBubbleRapFB Decision Engine based upon the settings
@@ -214,6 +215,7 @@ public class DistributedBubbleRapFB
 	/*  for FBfriends */
 	public boolean shouldSendMessageToFBHost(Message m, DTNHost otherHost)
 	{	
+		exchangeTime1++;
 		if(m.getTo() == otherHost) return true;//FBªB¤Í´N¬Odest.
 		
 		DTNHost dest = m.getTo();
@@ -241,6 +243,7 @@ public class DistributedBubbleRapFB
 	
 	public boolean shouldSendMessageToHost(Message m, DTNHost otherHost)
 	{
+		exchangeTime1++;
 		if(m.getTo() == otherHost) return true; // trivial to deliver to final dest
 		
 		/*
@@ -334,5 +337,6 @@ public class DistributedBubbleRapFB
 	
 	public void resetSignalCost(){
 		SignalCost=0;
+		exchangeTime1=0;
 	}
 }

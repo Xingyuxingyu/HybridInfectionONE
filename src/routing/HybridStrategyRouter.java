@@ -105,6 +105,7 @@ public class HybridStrategyRouter extends ActiveRouter
 	private List<Tuple<Message, Connection>> ShouldSendMessages;
 	public int readflag = 0;
 	public int SignalCost = 0;
+	public int exchangeTime = 0;
 
 
 
@@ -261,6 +262,7 @@ public class HybridStrategyRouter extends ActiveRouter
 		conStates.put(con, 1);
 		int newCost = decider.doExchangeForNewConnection(con, otherHost);
 		SignalCost = newCost + SignalCost;
+		exchangeTime++;
 	}
 	
 	/**
@@ -359,10 +361,12 @@ public class HybridStrategyRouter extends ActiveRouter
 		/*SprayAndWait  End*/
 		
 		SignalCost = ((DistributedHybridLog)decider).SignalCost + SignalCost;
+		exchangeTime = ((DistributedHybridLog)decider).exchangeTime1 + exchangeTime;
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, getHost(),
-					isFirstDelivery, SignalCost);
+					isFirstDelivery, SignalCost, exchangeTime);
 			SignalCost = 0;
+			exchangeTime = 0;
 			((DistributedHybridLog)decider).resetSignalCost();
 		}
 		

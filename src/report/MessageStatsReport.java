@@ -38,6 +38,7 @@ public class MessageStatsReport extends Report implements MessageListener {
 	private int nrofResponseDelivered;
 	private int nrofDelivered;
 	private long signalcost;
+	private long exchangeTime;
 	
 	/**
 	 * Constructor.
@@ -65,6 +66,7 @@ public class MessageStatsReport extends Report implements MessageListener {
 		this.nrofResponseDelivered = 0;
 		this.nrofDelivered = 0;
 		this.signalcost = 0;
+		this.exchangeTime = 0;
 	}
 
 	
@@ -94,11 +96,12 @@ public class MessageStatsReport extends Report implements MessageListener {
 
 	
 	public void messageTransferred(Message m, DTNHost from, DTNHost to,
-			boolean finalTarget,int newCost) {
+			boolean finalTarget,int newCost, int exTime) {
 		if (isWarmupID(m.getId())) {
 			return;
 		}
 		this.signalcost = this.signalcost + newCost;/*COST(bytes)*/		
+		this.exchangeTime = this.exchangeTime + exTime;
 		this.nrofRelayed++;
 		if (finalTarget) {
 			this.latencies.add(getSimTime() - 
@@ -165,6 +168,7 @@ public class MessageStatsReport extends Report implements MessageListener {
 				"\n" +format(deliveryCost) +
 				"\n" +getAverage(this.latencies) +
 				"\n" + this.signalcost/1000 +
+				"\n" + this.exchangeTime +
 			"\nstarted: " + this.nrofStarted + 
 			"\nrelayed: " + this.nrofRelayed +
 			"\naborted: " + this.nrofAborted +
@@ -183,7 +187,8 @@ public class MessageStatsReport extends Report implements MessageListener {
 			"\nbuffertime_med: " + getMedian(this.msgBufferTime) +
 			"\nrtt_avg: " + getAverage(this.rtt) +
 			"\nrtt_med: " + getMedian(this.rtt) +
-			"\nSignalCost: " + this.signalcost/1000
+			"\nSignalCost: " + this.signalcost/1000+
+			"\nexchangeTime: " + this.exchangeTime
 			;
 
 		

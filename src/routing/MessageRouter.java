@@ -355,7 +355,7 @@ public abstract class MessageRouter {
 		
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, this.host,
-					isFirstDelivery, 0);
+					isFirstDelivery, 0, 0);
 		}
 		
 		return aMessage;
